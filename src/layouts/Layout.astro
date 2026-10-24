@@ -56,7 +56,7 @@ const imageURL = new URL(url(image), Astro.site);
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<link rel="canonical" href={canonicalURL} />
-		{/* The github.io preview stays out of search until the domain moves. */}
+		{/* A sub-path preview (a `base` in astro.config.mjs) stays out of search. */}
 		{(noindex || isPreview) && <meta name="robots" content="noindex" />}
 
 		<!-- Open Graph / Facebook -->

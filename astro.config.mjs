@@ -1,15 +1,11 @@
 import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 
-// Served from GitHub Pages at julianhilgemann.github.io/hyperadapted.com/
-// while the hyperadapted.com domain still points at the old site. Astro does
-// not prefix links with `base` itself, so every internal href and public
-// asset goes through `url()` in src/lib/url.ts.
-//
-// Moving to the custom domain (AGENTS.md has the full checklist):
-//   site: 'https://hyperadapted.com', delete `base`, add public/CNAME.
+// Served from GitHub Pages on the custom domain, which is set in the repo's
+// Pages settings (a custom Actions deploy ignores a CNAME file). Internal
+// links and assets go through `url()` in src/lib/url.ts, so serving under a
+// sub-path again only takes a `base` here.
 export default defineConfig({
-    site: 'https://julianhilgemann.github.io',
-    base: '/hyperadapted.com',
+    site: 'https://hyperadapted.com',
     integrations: [tailwind()],
 });

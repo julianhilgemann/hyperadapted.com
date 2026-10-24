@@ -2,7 +2,7 @@
 
 The website of **Hyperadapted**: writing, audiovisual art and music, where data turns back into something you can feel. It is the hub for the work and links out to the channels where each piece lives.
 
-**Preview:** https://julianhilgemann.github.io/hyperadapted.com/
+**Live:** https://hyperadapted.com
 
 | Channel | |
 | --- | --- |
@@ -23,7 +23,7 @@ Static [Astro](https://astro.build) 4 with Tailwind CSS 3 and GSAP, deployed to 
 git clone --recurse-submodules https://github.com/julianhilgemann/hyperadapted.com.git
 cd hyperadapted.com
 npm install
-npm run dev      # http://localhost:4321/hyperadapted.com/
+npm run dev      # http://localhost:4321/
 npm run build    # static site in dist/
 ```
 

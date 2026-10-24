@@ -17,17 +17,12 @@ It is the sister site of [julianhilgemann.com](https://github.com/julianhilgeman
 
 `src/layouts/Layout.astro` owns `<head>`, the GA4 consent defaults, the Klaro cookie banner config, Nav, Footer and the follow dialog.
 
-## Served under a sub-path, for now
+## Domain
 
-Until the domain moves, the site is served at `https://julianhilgemann.github.io/hyperadapted.com/` (`base` in `astro.config.mjs`). Astro prefixes its own bundles but not your links, so **every internal href and every public asset goes through `url()`** from `src/lib/url.ts`: `href={url("/articles")}`, `src={url(image)}`. A bare `href="/about"` works in no environment but the custom domain. Markdown in articles cannot call `url()`, so link between articles with absolute URLs or not at all. While `base` is set, `isPreview` adds `noindex` to every page so the preview stays out of search.
+The site is served at `https://hyperadapted.com` (`site` in `astro.config.mjs`). It started at `julianhilgemann.github.io/hyperadapted.com/` under a `base`, which is why **every internal href and every public asset goes through `url()`** from `src/lib/url.ts`: `href={url("/articles")}`, `src={url(image)}`. Keep doing that; it costs nothing without a `base` and keeps a sub-path deploy one config line away. If a `base` is ever set again, `isPreview` adds `noindex` to every page.
 
-hyperadapted.com itself still points at the old Webflow site. Moving the domain here:
-
-1. `astro.config.mjs`: `site: 'https://hyperadapted.com'`, delete `base`.
-2. Add `public/CNAME` containing `hyperadapted.com`.
-3. DNS (at the registrar): apex `A` records to GitHub Pages (185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153), `www` `CNAME` to `julianhilgemann.github.io`.
-4. Repo Settings → Pages: custom domain `hyperadapted.com`, enforce HTTPS once the certificate is issued.
-5. julianhilgemann.com: its footer and `/story` still label the link "Coming Soon: Hyperadapted" (`HYPERADAPTED_LABEL` in `story.astro`, the footer's own copy).
+- The custom domain is set in the repo's Pages settings (`gh api repos/julianhilgemann/hyperadapted.com/pages`), not by a `public/CNAME` file, which a custom Actions deploy ignores. HTTPS is enforced there too.
+- DNS is at IONOS, set up like julianhilgemann.com's: four apex `A` records to GitHub Pages (185.199.108.153, 185.199.109.153, 185.199.110.153, 185.199.111.153) and `www` as a `CNAME` to `julianhilgemann.github.io`; GitHub redirects `www` to the apex. The domain's `MX` and SPF `TXT` records (IONOS mail) and the `google-site-verification` `TXT` record belong to other services: leave them alone.
 
 ## Articles
 
