@@ -50,7 +50,7 @@ There is no contact button: the nav's orbiting action is **Follow**, and it, the
 
 ## Design system
 
-The tokens come from the [design-system](https://github.com/julianhilgemann/design-system) repo, included as a git submodule at `design-system/`. `src/styles/tokens.mjs` only re-exports it, which keeps every import path identical to julianhilgemann.com's: a component or script copied from there works unchanged. To pull a token change: `git submodule update --remote design-system`, then commit the new submodule pointer. Clone with `--recurse-submodules` (or run `git submodule update --init`), or the build fails on the missing tokens.
+The tokens come from the [design-system](https://github.com/julianhilgemann/design-system) repo, included as a git submodule at `design-system/`. It has a light and a dark theme; julianhilgemann.com is light, this site is dark. The module's top-level exports are the dark theme, so `src/styles/tokens.mjs` only re-exports it, which keeps every import path identical to julianhilgemann.com's: a component or script copied from there works unchanged. To pull a token change: `git submodule update --remote design-system`, then commit the new submodule pointer. Clone with `--recurse-submodules` (or run `git submodule update --init`), or the build fails on the missing tokens.
 
 Everything else follows julianhilgemann.com's AGENTS.md (its "Design system" and "Motion" sections), which is the reference for both sites:
 
