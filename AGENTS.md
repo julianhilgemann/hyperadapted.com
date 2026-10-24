@@ -50,8 +50,8 @@ The tokens come from the [design-system](https://github.com/julianhilgemann/desi
 Everything else follows julianhilgemann.com's AGENTS.md (its "Design system" and "Motion" sections), which is the reference for both sites:
 
 - `tailwind.config.mjs` is copied as is: the palette is replaced, not extended, so only token colours exist (`text-white` compiles to nothing).
-- `components.css` and `klaro.css` are copied as is; `global.css` is too, minus the CV timeline and plus `.article-body` (Markdown prose on token colours; there is no typography plugin).
-- `Nav`, `Footer`, `Layout`, `GradientSheet`, `ScrollCue`, `MotionIntro`, `Section` and the motion scripts (`motion.ts`, `page.ts`, `gradient-sheet.ts`) are the main site's, with only names, items and links changed. `home.ts` is the main site's hero motion without the pipeline diagram. `FollowModal` is its `ContactModal`, `FollowCTA` its `SecondaryCTA`, `ArticleCard` its `ProjectCard`.
+- `components.css` comes from the design-system submodule (`design-system/components.css`, imported first in `global.css`), the same file julianhilgemann.com uses; it also holds the nav's mobile menu styles, whose panel is the same frosted glass as the bar. `klaro.css` is copied as is; `global.css` is too, minus the CV timeline and plus `.article-body` (Markdown prose on token colours; there is no typography plugin).
+- `Nav` (markup and script; its styles are in the shared component layer), `Footer`, `Layout`, `GradientSheet`, `ScrollCue`, `MotionIntro`, `Section` and the motion scripts (`motion.ts`, `page.ts`, `gradient-sheet.ts`) are the main site's, with only names, items and links changed. `home.ts` is the main site's hero motion without the pipeline diagram. `FollowModal` is its `ContactModal`, `FollowCTA` its `SecondaryCTA`, `ArticleCard` its `ProjectCard`.
 - When a shared component changes on julianhilgemann.com, port the change here too.
 
 The one deliberate difference: the hero's cycling words are orange (`from-primary to-primary-glow`) where the main site's are blue, and the favicon is a dark "H" on orange, the pair of the main site's dark "JH" on blue.
