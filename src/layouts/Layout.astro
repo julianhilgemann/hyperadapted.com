@@ -22,10 +22,10 @@ interface Props {
 // Link-preview image, 1200 x 630. Drawn and rendered by scripts/og-image.html.
 const DEFAULT_IMAGE = "/og-image.jpg";
 
-// GA4 measurement ID. Empty until the Hyperadapted property exists: the
-// consent defaults and the Klaro banner run regardless, and gtag.js loads
-// once an ID is set here.
-const GA_ID = "";
+// GA4 measurement ID of the Hyperadapted property. gtag.js loads on every
+// page, but Consent Mode keeps analytics storage denied until the visitor
+// accepts in the Klaro banner. Empty the string to drop the tag entirely.
+const GA_ID = "G-504TW02WH9";
 
 const {
 	title,

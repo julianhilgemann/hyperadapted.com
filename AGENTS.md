@@ -62,7 +62,7 @@ The one deliberate difference: the hero's cycling words are orange (`from-primar
 
 ## Analytics and the cookie banner
 
-`GA_ID` in `Layout.astro` is empty: no GA4 property exists yet. The consent defaults and the Klaro banner run regardless; once an ID is set, gtag.js loads and the banner's choice governs it. Klaro loads from jsDelivr and `src/styles/klaro.css` restyles it on the tokens (it must keep `top: auto`).
+`GA_ID` in `Layout.astro` is the Hyperadapted GA4 property (`G-504TW02WH9`, separate from julianhilgemann.com's). gtag.js loads on every page with Consent Mode defaults denied; accepting in the Klaro banner grants analytics storage. The follow dialog sends `open_follow_modal` and `follow_channel` events. Klaro loads from jsDelivr and `src/styles/klaro.css` restyles it on the tokens (it must keep `top: auto`).
 
 ## Not carried over from julianhilgemann.com
 
