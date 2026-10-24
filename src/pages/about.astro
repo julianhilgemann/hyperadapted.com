@@ -1,0 +1,190 @@
+---
+import Layout from "../layouts/Layout.astro";
+import MotionIntro from "../components/MotionIntro.astro";
+import ScrollCue from "../components/ScrollCue.astro";
+import SocialIcon from "../components/SocialIcon.astro";
+import FollowCTA from "../components/FollowCTA.astro";
+import { socials, type Social } from "../data/socials";
+import { categories } from "../data/categories";
+import { mainSite } from "../data/site";
+import { url } from "../lib/url";
+
+// Where each strand of the work is published: the arrow links under its card.
+const by = (id: Social["id"]) => socials.find((s) => s.id === id)!;
+const strands = {
+    Writing: [by("medium"), by("substack")],
+    Audiovisual: [by("youtube"), by("instagram")],
+    Music: [by("youtube")],
+};
+---
+
+<Layout
+    title="About | Hyperadapted"
+    description="About Hyperadapted, the creative alias of Julian Hilgemann: writing, audiovisual sketches and music, where data turns back into something you can feel."
+    fullWidth={true}
+>
+    <MotionIntro />
+
+    <!-- ── Intro ── -->
+    <section class="section-intro page-container relative isolate">
+        <h1 data-page-title data-intro class="text-h1 text-ink-strong mb-10">
+            About
+        </h1>
+
+        <p data-intro data-intro-fade class="max-w-measure text-lg md:text-xl text-ink-muted leading-relaxed md:leading-relaxed">
+            Hyperadapted is the creative alias of Julian Hilgemann. By day I
+            build data platforms: the systems that compress the world into
+            numbers someone can act on. Hyperadapted runs that pipeline the
+            other way. A measurement, a song or an idea goes in, and what comes
+            out is meant to be felt before it is read: an essay, an audiovisual
+            sketch, a piece of music. This site gathers all of it and points to
+            the channels where each piece lives.
+        </p>
+
+        <div data-intro data-intro-fade class="mt-10 flex flex-wrap gap-3">
+            <a href={url("/articles")} class="btn btn-sm">Articles</a>
+            <a href="#" class="btn btn-sm js-open-follow" data-location="about-intro">Follow</a>
+        </div>
+
+        <ScrollCue href="#strands" label="Scroll to what lives here" data-intro data-intro-fade />
+    </section>
+
+    <!-- ── What lives here: the three strands, each in its category's tone ── -->
+    <section id="strands" class="section border-t border-line-subtle">
+        <div class="page-container">
+            <h2 data-reveal-lines class="text-h2 text-ink-strong mb-head">What lives here</h2>
+            <ul data-reveal-stagger class="work-list grid md:grid-cols-3 gap-grid">
+                <li class:list={["card card-hover spotlight-card flex flex-col text-lg text-ink-muted leading-relaxed", `tone-${categories.Writing.tone}`]}>
+                    <div class="flex items-center justify-between mb-8" aria-hidden="true">
+                        <span class="icon-tile">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={categories.Writing.icon} />
+                        </span>
+                        <span class="work-num eyebrow"></span>
+                    </div>
+                    <strong class="block text-h3 text-ink-strong mb-3">Writing.</strong> Essays
+                    and letters on perception, data and making things. Longer
+                    thoughts, published on Medium and Substack and collected here.
+                    <span class="strand-links">
+                        {strands.Writing.map((s) => <a href={s.href} target="_blank" rel="noopener noreferrer" class="arrow-link">{s.name} <span class="arrow" aria-hidden="true">↗</span></a>)}
+                    </span>
+                </li>
+                <li class:list={["card card-hover spotlight-card flex flex-col text-lg text-ink-muted leading-relaxed", `tone-${categories.Audiovisual.tone}`]}>
+                    <div class="flex items-center justify-between mb-8" aria-hidden="true">
+                        <span class="icon-tile">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={categories.Audiovisual.icon} />
+                        </span>
+                        <span class="work-num eyebrow"></span>
+                    </div>
+                    <strong class="block text-h3 text-ink-strong mb-3">Audiovisual.</strong> Datasketches:
+                    short pieces where data drives the picture. A song measured
+                    frame by frame, then opened back up into light and motion in
+                    Blender and TouchDesigner.
+                    <span class="strand-links">
+                        {strands.Audiovisual.map((s) => <a href={s.href} target="_blank" rel="noopener noreferrer" class="arrow-link">{s.name} <span class="arrow" aria-hidden="true">↗</span></a>)}
+                    </span>
+                </li>
+                <li class:list={["card card-hover spotlight-card flex flex-col text-lg text-ink-muted leading-relaxed", `tone-${categories.Music.tone}`]}>
+                    <div class="flex items-center justify-between mb-8" aria-hidden="true">
+                        <span class="icon-tile">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={categories.Music.icon} />
+                        </span>
+                        <span class="work-num eyebrow"></span>
+                    </div>
+                    <strong class="block text-h3 text-ink-strong mb-3">Music.</strong> Where it
+                    started: audio engineering and production in Ableton Live.
+                    Tracks and sound pieces, released alongside the visuals they
+                    drive.
+                    <span class="strand-links">
+                        {strands.Music.map((s) => <a href={s.href} target="_blank" rel="noopener noreferrer" class="arrow-link">{s.name} <span class="arrow" aria-hidden="true">↗</span></a>)}
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ── The name ── -->
+    <section id="name" class="section border-t border-line-subtle">
+        <div class="page-container grid lg:grid-cols-12 gap-x-16 gap-y-8">
+            <div class="lg:col-span-4">
+                <h2 data-reveal-lines class="text-h2 text-ink-strong">Why Hyperadapted</h2>
+            </div>
+            <div data-reveal class="lg:col-span-8 max-w-measure space-y-5 text-lg md:text-xl text-ink-muted leading-relaxed md:leading-relaxed">
+                <p>
+                    We don't see the world. We see our best current guess about
+                    it, and the guess keeps adapting to whatever arrives next.
+                </p>
+                <p>
+                    Hyperadapted is that loop turned up: work that takes its
+                    shape from its input, a dataset, a track, a day, and wears
+                    it openly instead of smoothing it away.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Where to find it: the hub's link cards, one per channel ── -->
+    <section id="channels" class="section border-t border-line-subtle">
+        <div class="page-container">
+            <h2 data-reveal-lines class="text-h2 text-ink-strong mb-head">Where to find it</h2>
+            <nav data-reveal-stagger aria-label="Channels" class="grid gap-3 sm:gap-5 sm:grid-cols-2">
+                {
+                    socials.map((social) => (
+                        <a href={social.href} target="_blank" rel="noopener noreferrer" class="link-card glass spotlight-card">
+                            <span class="link-icon">
+                                <SocialIcon social={social} class="" />
+                            </span>
+                            <span class="link-text">
+                                <span class="link-title">{social.name}</span>
+                                <span class="link-sub">{social.handle} · {social.note}</span>
+                            </span>
+                            <span class="link-arrow" style="--nx: 3px; --ny: -3px">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"></path></svg>
+                            </span>
+                        </a>
+                    ))
+                }
+            </nav>
+        </div>
+    </section>
+
+    <!-- ── The other half: julianhilgemann.com, in blue (the system side) ── -->
+    <section id="other-half" class="section border-t border-line-subtle tone-info">
+        <div class="page-container grid lg:grid-cols-12 gap-x-16 gap-y-8">
+            <div class="lg:col-span-4">
+                <h2 data-reveal-lines class="text-h2 text-ink-strong">The other half</h2>
+            </div>
+            <div data-reveal class="lg:col-span-8 max-w-measure">
+                <p class="text-lg md:text-xl text-ink-muted leading-relaxed md:leading-relaxed">
+                    julianhilgemann.com is where the same pipeline runs
+                    forwards: data platforms, models and the numbers they
+                    produce. Compression to navigate there, expansion to express
+                    here.
+                </p>
+                <p class="mt-8">
+                    <a href={mainSite("about")} target="_blank" rel="noopener noreferrer" class="arrow-link">
+                        Visit julianhilgemann.com <span class="arrow" aria-hidden="true">↗</span>
+                    </a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <FollowCTA />
+</Layout>
+
+<script>
+    import "../scripts/page";
+</script>
+
+<style>
+    /* A strand's channels, at the foot of its card so they line up across
+       the row. */
+    .strand-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.5rem;
+        margin-top: auto;
+        padding-top: 1.5rem;
+        font-size: 0.9375rem;
+    }
+</style>

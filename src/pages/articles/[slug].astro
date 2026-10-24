@@ -1,0 +1,91 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import MotionIntro from "../../components/MotionIntro.astro";
+import FollowCTA from "../../components/FollowCTA.astro";
+import { getArticles, formatDate, type Article } from "../../lib/articles";
+import { categories } from "../../data/categories";
+import { url } from "../../lib/url";
+
+// A page for every article hosted here. Articles with an `href` live on
+// their channel, and their cards link there, so they get no page.
+export async function getStaticPaths() {
+    const articles = await getArticles();
+    return articles
+        .filter((article) => !article.data.href)
+        .map((article) => ({ params: { slug: article.slug }, props: { article } }));
+}
+
+const { article } = Astro.props as { article: Article };
+const { title, description, date, category, image } = article.data;
+const { tone } = categories[category];
+const { Content } = await article.render();
+---
+
+<Layout
+    title={`${title} | Hyperadapted`}
+    description={description}
+    image={image}
+    type="article"
+    fullWidth={true}
+>
+    <MotionIntro />
+
+    <article class:list={["page-container pb-section", `tone-${tone}`]}>
+        <header class="max-w-3xl mb-12 md:mb-16">
+            <p data-intro data-intro-fade class="eyebrow eyebrow-tone mb-6">
+                {category}
+                <span class="eyebrow-rule"></span>
+                <time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time>
+            </p>
+            <h1 data-page-title data-intro class="text-h2 text-ink-strong mb-6">{title}</h1>
+            <p data-intro data-intro-fade class="text-lead text-ink-muted">{description}</p>
+        </header>
+
+        {
+            image && (
+                <img
+                    data-intro
+                    data-intro-fade
+                    src={url(image)}
+                    alt=""
+                    class="w-full max-w-4xl aspect-[16/9] object-cover rounded-card border border-line mb-12 md:mb-16"
+                />
+            )
+        }
+
+        <div data-intro data-intro-fade class="article-body max-w-measure">
+            <Content />
+        </div>
+
+        <p class="mt-16 pt-8 border-t border-line-subtle max-w-measure">
+            <a href={url("/articles")} class="arrow-link back-link">
+                <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="rotate-180"
+                    aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"></path></svg
+                >
+                All articles
+            </a>
+        </p>
+    </article>
+
+    <FollowCTA />
+</Layout>
+
+<script>
+    import "../../scripts/page";
+</script>
+
+<style>
+    /* The back link's arrow points left, so it nudges left on hover. */
+    .back-link:hover svg {
+        translate: -3px 0;
+    }
+</style>

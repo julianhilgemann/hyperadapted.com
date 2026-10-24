@@ -1,0 +1,167 @@
+---
+// One article: julianhilgemann.com's project card, fed from the articles
+// collection. The whole card is the link (a stretched link on its one
+// action). An article that lives elsewhere links out with that channel's
+// mark and verb ("Watch on YouTube"); one hosted here reads "Read".
+//
+// The card is drawn in its category's tone (src/data/categories.ts). Without
+// an `image`, the cover is a field in that tone with the category's mark.
+//
+//   featured  spans the grid's two columns, cover beside the text from lg
+import SocialIcon from "./SocialIcon.astro";
+import { categories } from "../data/categories";
+import { socialFor } from "../data/socials";
+import { articleHref, formatDate, type Article } from "../lib/articles";
+import { url } from "../lib/url";
+
+interface Props {
+    article: Article;
+    featured?: boolean;
+    /** The heading level of the title, so a card fits the page outline. */
+    as?: "h2" | "h3";
+}
+
+const { article, featured = false, as: Heading = "h3" } = Astro.props;
+const { title, description, date, category, image, href } = article.data;
+const { tone, icon } = categories[category];
+const social = href ? socialFor(href) : undefined;
+const label = href ? (social ? `${social.verb} ${social.name}` : "Open") : "Read";
+---
+
+<article
+    class:list={[
+        "card card-hover spotlight-card p-0 group flex flex-col overflow-hidden h-full",
+        `tone-${tone}`,
+        featured && "lg:flex-row",
+    ]}
+>
+    <span
+        class:list={[
+            "block relative aspect-[16/9] overflow-hidden bg-wash-subtle shrink-0",
+            featured && "lg:w-1/2",
+        ]}
+    >
+        {
+            image ? (
+                <img
+                    src={url(image)}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity duration-slow"
+                />
+            ) : (
+                <span class="cover-art" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" set:html={icon} />
+                </span>
+            )
+        }
+    </span>
+
+    <div class:list={["flex flex-col flex-1 p-card", featured && "lg:p-10 lg:justify-center"]}>
+        <p class="eyebrow eyebrow-tone">
+            {category}
+            <span class="eyebrow-rule"></span>
+            <time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time>
+        </p>
+        <Heading class="text-h3 text-ink-strong mt-3 mb-2">{title}</Heading>
+        <p class="text-ink-muted leading-relaxed">{description}</p>
+
+        <p class="article-links">
+            <a
+                href={articleHref(article)}
+                target={href ? "_blank" : undefined}
+                rel={href ? "noopener noreferrer" : undefined}
+                class="article-link"
+            >
+                {social && <SocialIcon social={social} class="w-[18px] h-[18px]" />}
+                {label}<span class="sr-only">: {title}</span>
+                {
+                    href ? (
+                        <svg class="article-link-arrow is-out" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg>
+                    ) : (
+                        <svg class="article-link-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+                    )
+                }
+            </a>
+        </p>
+    </div>
+</article>
+
+<style>
+    /* A cover for an article without an image: two soft lights, one in the
+       card's tone and one in the other accent, over the surface, with the
+       category's mark in the middle. It brightens with the card. */
+    .cover-art {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background:
+            radial-gradient(60% 80% at 22% 30%, rgb(var(--tone) / 0.32), transparent 70%),
+            radial-gradient(55% 70% at 85% 85%, rgb(var(--color-info) / 0.18), transparent 70%),
+            rgb(var(--color-surface));
+        color: rgb(var(--tone) / 0.75);
+        opacity: 0.7;
+        transition: opacity var(--dur-slow) var(--ease-out);
+    }
+    .cover-art svg {
+        width: clamp(3rem, 18%, 5rem);
+        height: auto;
+    }
+    .group:hover .cover-art {
+        opacity: 1;
+    }
+
+    /* Pushed to the foot of the card, so the links line up across a row. */
+    .article-links {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.75rem 1.5rem;
+        margin-top: auto;
+        padding-top: 1.5rem;
+    }
+
+    .article-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        color: rgb(var(--color-ink));
+        transition: color var(--dur-fast) var(--ease-out);
+    }
+
+    /* The link covers the whole card. */
+    .article-link::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+    }
+
+    .article-link-arrow {
+        color: rgb(var(--tone));
+        transition: translate var(--dur-base) var(--ease-out);
+    }
+
+    .group:hover .article-link-arrow {
+        translate: 2px 0;
+    }
+    .group:hover .article-link-arrow.is-out {
+        translate: 2px -2px;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .group:hover .article-link {
+            color: rgb(var(--tone));
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .cover-art,
+        .article-link-arrow {
+            transition: none;
+        }
+    }
+</style>

@@ -1,0 +1,28 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Section from "../components/Section.astro";
+import { url } from "../lib/url";
+---
+
+<Layout title="Cookie Einstellungen | Hyperadapted">
+    <Section class="!pt-0">
+        <div lang="de" class="max-w-prose mx-auto space-y-6 text-ink-muted">
+            <h1 class="text-h2 text-ink-strong hyphens-auto mb-8">Cookie Einstellungen</h1>
+            <p>
+                Diese Website setzt Cookies nur für die Reichweitenmessung mit
+                Google Analytics 4, und nur nach Ihrer Einwilligung. Ihre
+                Auswahl können Sie hier jederzeit ändern. Details stehen in der
+                <a href={url("/datenschutz")} class="text-link">Datenschutzerklärung</a>.
+            </p>
+            <p>
+                <button
+                    type="button"
+                    onclick="window.klaro && window.klaro.show()"
+                    class="btn btn-primary"
+                >
+                    Einstellungen öffnen
+                </button>
+            </p>
+        </div>
+    </Section>
+</Layout>

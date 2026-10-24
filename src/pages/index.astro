@@ -1,0 +1,69 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Hero from "../components/Hero.astro";
+import ArticleCard from "../components/ArticleCard.astro";
+import FollowCTA from "../components/FollowCTA.astro";
+import { getArticles } from "../lib/articles";
+import { url } from "../lib/url";
+
+// The welcome page: the hero, the three newest pieces, and the way to
+// follow. Everything else is on /articles.
+const latest = (await getArticles()).slice(0, 3);
+---
+
+<Layout
+    title="Hyperadapted | Writing, audiovisual art and music"
+    description="Hyperadapted gathers writing, audiovisual art and music in one place, and links out to the channels where each piece lives."
+    fullWidth={true}
+    noTopPadding={true}
+>
+    <!-- Hero Section -->
+    <Hero />
+
+    <!-- The newest pieces (full list lives on /articles) -->
+    <section id="latest" class="section section-screen border-t border-line-subtle">
+        <div class="page-container w-full">
+            <div class="md:flex md:items-end md:justify-between md:gap-12 mb-head">
+                <h2 data-reveal-lines class="text-h2 text-ink-strong">Latest</h2>
+                <p data-reveal class="mt-5 md:mt-0 md:text-right max-w-xl text-lg text-ink-muted leading-relaxed">
+                    Essays, audiovisual sketches and music. Some live here,
+                    some on the channel they were made for.
+                </p>
+            </div>
+
+            <ul data-reveal-stagger class="grid md:grid-cols-3 gap-grid">
+                {
+                    latest.map((article) => (
+                        <li>
+                            <ArticleCard article={article} />
+                        </li>
+                    ))
+                }
+            </ul>
+
+            <p class="mt-10">
+                <a href={url("/articles")} class="arrow-link">
+                    All articles
+                    <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"></path></svg
+                    >
+                </a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Follow CTA -->
+    <FollowCTA />
+</Layout>
+
+<script>
+    import "../scripts/home";
+</script>

@@ -1,0 +1,16 @@
+---
+// A channel's mark (src/data/socials.ts), filled with the text colour, so a
+// hover colour on the link reaches it.
+import type { Social } from "../data/socials";
+
+interface Props {
+    social: Social;
+    class?: string;
+}
+
+const { social, class: className = "w-6 h-6" } = Astro.props;
+---
+
+<svg class:list={["fill-current", className]} viewBox="0 0 24 24" aria-hidden="true">
+    <path d={social.path}></path>
+</svg>

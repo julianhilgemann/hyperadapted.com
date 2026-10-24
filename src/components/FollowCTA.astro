@@ -1,0 +1,46 @@
+---
+// The screen that closes the homepage, Articles and About: one line, one
+// orbiting button, and the four channels, over the gradient sheet.
+// julianhilgemann.com's SecondaryCTA with a follow in place of a contact.
+// The sheet sits at 80% over the page colour, the same veil the hero's glass
+// layer gives it, and melts into the page at its top and bottom edges.
+import GradientSheet from "./GradientSheet.astro";
+import SocialIcon from "./SocialIcon.astro";
+import { socials } from "../data/socials";
+---
+
+<section class="section section-screen relative isolate overflow-hidden">
+    <GradientSheet start={22} fade class="-z-10 opacity-80" />
+
+    <div class="page-container text-center">
+        <h2 data-reveal-lines class="text-h2 text-ink-strong mb-8">
+            Follow along. New work lands here first.
+        </h2>
+        <div data-reveal class="flex flex-col items-center gap-8">
+            <a
+                href="#"
+                class="btn btn-primary orbit-ring js-open-follow"
+                data-location="follow-cta"
+            >
+                Follow Hyperadapted
+            </a>
+            <ul class="flex gap-3" aria-label="Channels">
+                {
+                    socials.map((social) => (
+                        <li>
+                            <a
+                                href={social.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="icon-btn hover:text-primary"
+                            >
+                                <span class="sr-only">{social.name}</span>
+                                <SocialIcon social={social} class="w-[18px] h-[18px]" />
+                            </a>
+                        </li>
+                    ))
+                }
+            </ul>
+        </div>
+    </div>
+</section>

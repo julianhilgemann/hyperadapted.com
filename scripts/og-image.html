@@ -1,0 +1,116 @@
+<!doctype html>
+<!--
+  Social preview image (og:image) for Hyperadapted, 1200 x 630.
+
+  The backdrop is a still take on the gradient sheet behind the homepage hero
+  (src/scripts/gradient-sheet.ts): the same token colours, laid as soft
+  lights over the page colour, with the site's dot grid on top. The headline
+  is the hero's, landed on its first word. Text sits left of centre, and the
+  wordmark is large enough to survive the square crop some apps make.
+
+  Colours are the design tokens (design-system/tokens.mjs); fonts are the
+  site's system stack. Render with scripts/render-images.sh.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --bg: #0B1220;
+    --ink-strong: #FFFFFF;
+    --ink-muted: #9CA3AF;
+    --ink-faint: #808794;
+    --primary: #F59E0B;
+    --primary-glow: #FDE047;
+    --info: #38BDF8;
+  }
+  * { margin: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    position: relative;
+    background: var(--bg);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  /* The gradient sheet, held still: deep blue, an ember ribbon, signal blue. */
+  .field {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(48% 70% at 84% 18%, rgba(56, 189, 248, 0.42), transparent 70%),
+      radial-gradient(42% 62% at 70% 92%, rgba(245, 158, 11, 0.55), transparent 72%),
+      radial-gradient(60% 90% at 100% 60%, rgba(56, 189, 248, 0.16), transparent 70%),
+      radial-gradient(70% 80% at 10% 110%, rgba(245, 158, 11, 0.16), transparent 70%);
+    filter: blur(8px);
+  }
+  /* The glass layer the hero puts over the sheet. */
+  .veil {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(11, 18, 32, 0.92) 0%, rgba(11, 18, 32, 0.55) 55%, rgba(11, 18, 32, 0.2) 100%);
+  }
+  .grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+    background-size: 28px 28px;
+    -webkit-mask-image: radial-gradient(ellipse 110% 100% at 30% 0%, #000 30%, transparent 100%);
+  }
+  .content {
+    position: absolute;
+    left: 96px;
+    top: 0;
+    bottom: 0;
+    width: 820px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .eyebrow {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .eyebrow .rule { width: 36px; height: 1px; background: rgba(255, 255, 255, 0.25); }
+  h1 {
+    margin-top: 28px;
+    font-size: 124px;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    font-weight: 700;
+    color: var(--ink-strong);
+  }
+  p {
+    margin-top: 32px;
+    font-size: 40px;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    color: #F3F4F6;
+  }
+  .accent {
+    background: linear-gradient(90deg, var(--primary), var(--primary-glow));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    padding-right: 0.08em;
+  }
+</style>
+</head>
+<body>
+  <div class="field"></div>
+  <div class="veil"></div>
+  <div class="grid"></div>
+  <div class="content">
+    <div class="eyebrow">Writing<span class="rule"></span>Audiovisual<span class="rule"></span>Music</div>
+    <h1>Hyperadapted</h1>
+    <p>Where data turns back into <span class="accent">sound.</span></p>
+  </div>
+</body>
+</html>

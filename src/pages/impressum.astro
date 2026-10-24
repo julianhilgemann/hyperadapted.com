@@ -1,0 +1,46 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Section from "../components/Section.astro";
+import { EMAIL } from "../data/site";
+---
+
+<Layout title="Impressum | Hyperadapted">
+    <Section class="!pt-0">
+        <div lang="de" class="max-w-prose mx-auto">
+            <h1 class="text-h2 text-ink-strong hyphens-auto mb-8">Impressum</h1>
+
+            <div class="space-y-8 text-ink-muted">
+                <p>Hyperadapted ist ein Projekt von Julian Hilgemann.</p>
+
+                <div>
+                    <h2 class="text-h3 text-ink-strong mb-2">
+                        Angaben gemäß § 5 TMG
+                    </h2>
+                    <p>
+                        Julian Hilgemann<br />
+                        Josef‑Führer‑Straße 41<br />
+                        80997 München
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-h3 text-ink-strong mb-2">Kontakt</h2>
+                    <p>
+                        E‑Mail: <a
+                            href={`mailto:${EMAIL}`}
+                            class="text-link"
+                            >{EMAIL}</a
+                        >
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-h3 text-ink-strong mb-2">
+                        Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV
+                    </h2>
+                    <p>Julian Hilgemann (Anschrift wie oben)</p>
+                </div>
+            </div>
+        </div>
+    </Section>
+</Layout>

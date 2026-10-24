@@ -1,0 +1,235 @@
+---
+// The follow dialog: julianhilgemann.com's contact dialog, listing the
+// channels instead of a single email button. Opened by any `.js-open-follow`
+// (the nav button, the footer's Contact link, the closing CTA); its
+// `data-location` names the placement in the analytics event.
+import SocialIcon from "./SocialIcon.astro";
+import { socials } from "../data/socials";
+import { EMAIL } from "../data/site";
+---
+
+<dialog
+    id="follow-modal"
+    class="bg-transparent p-0 m-auto max-w-lg w-[90%]"
+>
+    <div
+        class="panel bg-surface shadow-panel p-8 sm:p-10 relative overflow-hidden"
+    >
+        <!-- Close Button -->
+        <button
+            id="close-follow-modal"
+            class="icon-btn absolute top-4 right-4"
+            aria-label="Close dialog"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+
+        <!-- Content -->
+        <div class="text-center">
+            <h2 class="text-3xl font-bold tracking-tight mb-4 text-ink-strong">Follow Hyperadapted</h2>
+            <p class="text-ink-muted mb-8 text-lg leading-relaxed">
+                New pieces land on these channels first. Pick the one that
+                suits how you like to read, watch or listen.
+            </p>
+        </div>
+
+        <ul class="grid gap-3">
+            {
+                socials.map((social) => (
+                    <li>
+                        <a
+                            href={social.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="follow-row"
+                            data-channel={social.id}
+                        >
+                            <span class="follow-icon">
+                                <SocialIcon social={social} class="w-5 h-5" />
+                            </span>
+                            <span class="min-w-0">
+                                <span class="block font-semibold text-ink-strong">{social.name}</span>
+                                <span class="block text-sm text-ink-muted truncate">{social.note}</span>
+                            </span>
+                            <svg class="follow-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"></path></svg>
+                        </a>
+                    </li>
+                ))
+            }
+        </ul>
+
+        <p class="mt-8 text-sm text-ink-faint text-center">
+            Anything else? <a href={`mailto:${EMAIL}`} class="text-link">Write an email</a>.
+        </p>
+    </div>
+</dialog>
+
+<script>
+    const initModal = () => {
+        const dialog = document.getElementById("follow-modal") as HTMLDialogElement;
+        const closeBtn = document.getElementById("close-follow-modal");
+        const triggers = document.querySelectorAll(".js-open-follow");
+
+        if (!dialog) return;
+
+        // @ts-ignore gtag is defined inline by Layout.astro
+        const track = (name: string, params: Record<string, string>) => typeof window.gtag === "function" && window.gtag("event", name, params);
+
+        // Open
+        triggers.forEach((trigger) => {
+            trigger.addEventListener("click", (e) => {
+                e.preventDefault();
+                document.body.style.overflow = "hidden";
+                track("open_follow_modal", {
+                    event_category: "engagement",
+                    event_label: trigger.getAttribute("data-location") || "unknown",
+                });
+                dialog.showModal();
+            });
+        });
+
+        // Which channel people pick from the dialog
+        dialog.querySelectorAll<HTMLElement>("[data-channel]").forEach((link) => {
+            link.addEventListener("click", () =>
+                track("follow_channel", { event_category: "engagement", event_label: link.dataset.channel || "unknown" }),
+            );
+        });
+
+        // Handle all close events (button, backdrop, Escape key)
+        dialog.addEventListener("close", () => {
+            document.body.style.overflow = "";
+        });
+
+        // Close
+        closeBtn?.addEventListener("click", () => {
+            dialog.close();
+        });
+
+        // Close on backdrop click
+        dialog.addEventListener("click", (e) => {
+            const rect = dialog.getBoundingClientRect();
+            const isInDialog =
+                rect.top <= e.clientY &&
+                e.clientY <= rect.top + rect.height &&
+                rect.left <= e.clientX &&
+                e.clientX <= rect.left + rect.width;
+
+            if (!isInDialog) {
+                dialog.close();
+            }
+        });
+    };
+
+    initModal();
+    document.addEventListener("astro:page-load", initModal);
+</script>
+
+<style>
+    /* The dialog arrives with the site's fade + settle. */
+    dialog[open] {
+        animation: fade-in var(--dur-base) var(--ease-out) forwards;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        dialog[open] {
+            animation: none;
+        }
+    }
+
+    dialog::backdrop {
+        background: var(--scrim);
+        backdrop-filter: blur(var(--scrim-blur));
+        -webkit-backdrop-filter: blur(var(--scrim-blur));
+    }
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* One channel per row: the compact phone layout of the hub's link
+       cards (global.css `.link-card`), kept at every width so four rows
+       fit the dialog. */
+    .follow-row {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.875rem 1rem;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-card);
+        background-color: var(--wash-subtle);
+        text-align: left;
+        -webkit-tap-highlight-color: transparent;
+        transition:
+            background-color var(--dur-base) var(--ease-out),
+            border-color var(--dur-base) var(--ease-out),
+            scale var(--dur-fast) var(--ease-out);
+    }
+    .follow-row:active {
+        scale: var(--press);
+    }
+    .follow-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: var(--radius-control);
+        border: 1px solid var(--line);
+        background: var(--wash);
+        color: rgb(var(--color-ink-muted));
+        transition:
+            background-color var(--dur-base) var(--ease-out),
+            border-color var(--dur-base) var(--ease-out),
+            color var(--dur-base) var(--ease-out);
+    }
+    .follow-arrow {
+        color: rgb(var(--color-ink-faint));
+        transition:
+            color var(--dur-base) var(--ease-out),
+            translate var(--dur-base) var(--ease-out);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+        .follow-row:hover {
+            border-color: rgb(var(--color-primary) / 0.45);
+            background-color: var(--wash);
+        }
+        .follow-row:hover .follow-icon {
+            background: rgb(var(--color-primary) / 0.12);
+            border-color: rgb(var(--color-primary) / 0.4);
+            color: rgb(var(--color-primary));
+        }
+        .follow-row:hover .follow-arrow {
+            color: rgb(var(--color-primary));
+            translate: 3px -3px;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .follow-row,
+        .follow-arrow {
+            transition: none;
+        }
+    }
+</style>

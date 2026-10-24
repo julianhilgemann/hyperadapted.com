@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+  <!-- julianhilgemann.com's mark is a dark "JH" on the blue accent; this is
+       its pair, a dark "H" on the orange accent. Source of
+       apple-touch-icon.png and favicon-32.png (scripts/render-images.sh). -->
+  <rect width="180" height="180" fill="#F59E0B"/>
+  <g fill="none" stroke="#0B1220" stroke-width="11" stroke-linecap="round">
+    <path d="M76 42 L60 138"/>
+    <path d="M132 42 L116 138"/>
+    <path d="M52 91 C 80 86, 112 86, 142 90"/>
+  </g>
+</svg>

@@ -1,0 +1,495 @@
+/* Site stylesheet, loaded by the layout. Copied from julianhilgemann.com,
+   minus what only that site uses, plus the article body styles at the end.
+
+   The design system lives in three places:
+     tokens.mjs      every value (colour, type, space, shape, motion), from
+                     the design-system submodule; the Tailwind config writes
+                     them to :root as custom properties
+     components.css  the shared building blocks: buttons, cards, labels, links
+     this file       base styles and the site's signature effects
+
+   Vite inlines these imports before Tailwind runs, so the `@layer` blocks
+   inside them land in the right layer. Imports must stay first. */
+@import "./components.css";
+@import "./klaro.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background-color: rgb(var(--color-background));
+    color: rgb(var(--color-ink));
+  }
+
+  body {
+    @apply antialiased;
+  }
+
+  ::selection {
+    background-color: rgb(var(--color-primary) / 0.35);
+    color: rgb(var(--color-ink-strong));
+  }
+
+  /* One focus ring for everything a keyboard can reach. */
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: var(--focus-width) solid rgb(var(--focus-color));
+    outline-offset: var(--focus-offset);
+  }
+}
+
+/* --- Custom Lists (Fix for iPhone) --- */
+.custom-bullets ul,
+.custom-bullets li,
+.prose ul,
+.prose ul>li {
+  list-style-type: none !important;
+  list-style: none !important;
+  padding-left: 0 !important;
+  margin: 0 !important;
+}
+
+.custom-bullets ul,
+.prose ul,
+.custom-bullets li,
+.prose ul>li {
+  position: relative;
+}
+
+.custom-bullets li,
+.prose ul>li {
+  position: relative;
+  padding-left: 1.5rem !important;
+  margin-bottom: 0.5rem;
+  display: block;
+  /* Ensure block display for predictable positioning */
+}
+
+/* Custom bullet */
+.custom-bullets li::before,
+.prose ul>li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.65em;
+  /* Adjusted for better baseline alignment */
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgb(var(--color-ink-muted));
+  display: block;
+}
+
+/* Aggressively hide default markers */
+.custom-bullets li::marker,
+.prose ul>li::marker,
+.custom-bullets ul ::marker,
+.prose ul ::marker {
+  content: none !important;
+  display: none !important;
+  color: transparent !important;
+}
+
+/* --- Motion (see src/scripts/motion.ts) --- */
+
+/* Pre-paint hide for load intros. MotionIntro.astro sets the class and the
+   page script removes it once GSAP holds each element's state. */
+html.motion-intro [data-intro] {
+  visibility: hidden;
+}
+
+/* SplitText line masks clip at the line box, which cuts descenders on tight
+   headline leading. Pad the mask and pull the layout back so nothing moves. */
+.split-line-mask {
+  padding-bottom: 0.14em;
+  margin-bottom: -0.14em;
+}
+
+/* Cursor spotlight for glass cards: a soft wash inside the card plus a lit
+   arc of the border, both centred on --mx/--my (set from pointermove in
+   src/scripts/motion.ts). Isolation makes the card a stacking context, so
+   z-index -1 keeps the wash above the card background but behind its text. */
+.spotlight-card {
+  position: relative;
+  isolation: isolate;
+}
+.spotlight-card::before,
+.spotlight-card::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.spotlight-card::before {
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(520px circle at var(--mx, 50%) var(--my, 50%), rgb(var(--color-info) / 0.07), transparent 45%);
+}
+.spotlight-card::after {
+  inset: -1px;
+  padding: 1px;
+  background: radial-gradient(360px circle at var(--mx, 50%) var(--my, 50%), rgb(var(--color-primary) / 0.6), transparent 45%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+@media (hover: hover) and (pointer: fine) {
+  .spotlight-card:hover::before,
+  .spotlight-card:hover::after {
+    opacity: 1;
+  }
+}
+
+/* --- Backdrops --- */
+
+/* Faint blueprint dot grid behind every page. Fixed, so the content scrolls
+   over it and reads as a layer above; strongest under the nav, fading toward
+   the bottom corners. Sections that paint their own backdrop (the homepage
+   hero) cover it. `isolation` on body keeps it above the body's own
+   background but below everything in the page. Sized to the large viewport,
+   not `inset: 0`, so its fade does not stretch while a phone's toolbar
+   collapses mid-scroll. */
+body {
+  isolation: isolate;
+}
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100vh;
+  height: 100lvh;
+  z-index: -1;
+  pointer-events: none;
+  background-image: radial-gradient(rgb(var(--color-contrast) / 0.12) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse 110% 100% at 50% 0%, #000 30%, transparent 100%);
+  mask-image: radial-gradient(ellipse 110% 100% at 50% 0%, #000 30%, transparent 100%);
+}
+/* A gradient sheet in the middle of a page (GradientSheet `fade`): its top
+   and bottom edges melt into the page instead of ending in a hard band. */
+.sheet-fade {
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 30%, #000 70%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 30%, #000 70%, transparent);
+}
+/* --- About page --- */
+
+/* "What lives here" cards: numbered by counter so the digits stay out of
+   the markup. */
+.work-list {
+  counter-reset: work;
+}
+.work-list > li {
+  counter-increment: work;
+}
+.work-num::before {
+  content: counter(work, decimal-leading-zero);
+}
+
+/* --- Link cards (the channels on /about; julianhilgemann.com's /hub) --- */
+
+/* One card, two layouts. Phones: a compact row (icon · text · arrow).
+   From `sm`: a tile with icon and arrow on top, text anchored to the bottom.
+   Hover lift and press use the individual `translate` / `scale` properties,
+   which never collide with GSAP's `transform` during the intro. */
+.link-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.125rem;
+  border-radius: var(--radius-card);
+  transition:
+    translate var(--dur-base) var(--ease-out),
+    scale var(--dur-fast) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    background-color var(--dur-base) var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+.link-card:active {
+  scale: var(--press);
+}
+.link-card.is-primary {
+  border-color: rgb(var(--color-primary) / 0.45);
+}
+.link-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-control);
+  background: var(--wash);
+  border: 1px solid var(--line);
+  color: rgb(var(--color-ink-muted));
+  transition:
+    background-color var(--dur-base) var(--ease-out),
+    border-color var(--dur-base) var(--ease-out),
+    color var(--dur-base) var(--ease-out);
+}
+.link-icon svg {
+  width: 1.375rem;
+  height: 1.375rem;
+}
+.link-title {
+  display: block;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: rgb(var(--color-ink-strong));
+}
+.link-sub {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 0.8125rem;
+  color: rgb(var(--color-ink-muted));
+}
+/* --nx / --ny set per card: the direction the arrow points (↗ → ↓). */
+.link-arrow {
+  color: rgb(var(--color-ink-faint));
+  transition:
+    color var(--dur-base) var(--ease-out),
+    translate var(--dur-base) var(--ease-out);
+}
+.is-primary .link-arrow {
+  color: rgb(var(--color-primary));
+}
+
+@media (min-width: 640px) {
+  .link-card {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto 1fr;
+    align-items: start;
+    gap: 2.5rem 1rem;
+    padding: 1.75rem;
+    min-height: 13rem;
+    border-radius: var(--radius-panel);
+  }
+  .link-card .link-text {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    align-self: end;
+  }
+  .link-card .link-arrow {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .link-icon {
+    width: 3.25rem;
+    height: 3.25rem;
+    font-size: 1.0625rem;
+  }
+  .link-icon svg {
+    width: 1.625rem;
+    height: 1.625rem;
+  }
+  .link-title {
+    font-size: 1.375rem;
+  }
+  .link-sub {
+    font-size: 0.9375rem;
+    margin-top: 0.25rem;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .link-card:hover {
+    translate: 0 var(--lift);
+    border-color: rgb(var(--color-primary) / 0.45);
+    background-color: var(--wash);
+  }
+  .link-card:hover .link-icon {
+    background: rgb(var(--color-primary) / 0.12);
+    border-color: rgb(var(--color-primary) / 0.4);
+    color: rgb(var(--color-primary));
+  }
+  .link-card:hover .link-arrow {
+    color: rgb(var(--color-primary));
+    translate: var(--nx, 4px) var(--ny, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link-card,
+  .link-arrow {
+    transition: none;
+  }
+}
+
+/* ── Orbiting light on the contact buttons ──
+   A single bright segment travels the rounded edge, so the one action on the
+   page keeps signalling that it is live. Applied with `.orbit-ring` to the
+   contact CTAs; it needs `border-radius` on the element itself, which it
+   inherits. */
+@property --orbit-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.orbit-ring {
+  position: relative;
+  isolation: isolate;
+}
+
+.orbit-ring::before {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--orbit-angle),
+    transparent 0deg 232deg,
+    rgb(var(--color-primary) / 0.85) 288deg,
+    rgb(var(--color-primary-glow) / 0.95) 310deg,
+    rgb(var(--color-primary) / 0.85) 332deg,
+    transparent 356deg 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: orbit-ring 4.5s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes orbit-ring {
+  to {
+    --orbit-angle: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbit-ring::before {
+    animation: none;
+    opacity: 0.6;
+  }
+}
+
+/* --- Article body ---
+   Markdown from src/content/articles, rendered on /articles/<slug>. The
+   palette is token-only (no typography plugin), so every element the
+   Markdown can produce is styled here. Body copy is muted like the rest of
+   the site; emphasis and headings step up the ink scale; accents follow the
+   article's tone, set on the <article>. */
+.article-body {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  color: rgb(var(--color-ink-muted));
+}
+.article-body > * + * {
+  margin-top: 1.25em;
+}
+.article-body h2,
+.article-body h3 {
+  color: rgb(var(--color-ink-strong));
+  font-weight: 700;
+}
+.article-body h2 {
+  margin-top: 2.25em;
+  font-size: var(--text-h3);
+  line-height: var(--leading-h3);
+  letter-spacing: var(--tracking-h3);
+}
+.article-body h3 {
+  margin-top: 1.75em;
+  font-size: 1.125rem;
+}
+.article-body h2 + *,
+.article-body h3 + * {
+  margin-top: 0.75em;
+}
+.article-body strong {
+  color: rgb(var(--color-ink));
+  font-weight: 600;
+}
+.article-body a {
+  color: rgb(var(--color-ink));
+  text-decoration: underline;
+  text-decoration-color: rgb(var(--tone) / 0.45);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    text-decoration-color var(--dur-fast) var(--ease-out);
+}
+.article-body a:hover {
+  color: rgb(var(--tone));
+  text-decoration-color: rgb(var(--tone));
+}
+.article-body ul,
+.article-body ol {
+  padding-left: 1.25rem;
+}
+.article-body ul {
+  list-style: disc;
+}
+.article-body ol {
+  list-style: decimal;
+}
+.article-body li + li {
+  margin-top: 0.5em;
+}
+.article-body li::marker {
+  color: rgb(var(--color-ink-faint));
+}
+.article-body blockquote {
+  padding-left: 1.25rem;
+  border-left: 2px solid rgb(var(--tone) / 0.6);
+  color: rgb(var(--color-ink));
+}
+.article-body hr {
+  margin-block: 2.5em;
+  border-color: var(--line-subtle);
+}
+.article-body code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  padding: 0.1em 0.35em;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-chip);
+  background: var(--wash);
+  color: rgb(var(--color-ink));
+}
+.article-body pre {
+  overflow-x: auto;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: rgb(var(--color-surface));
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+.article-body pre code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: inherit;
+}
+/* Images, video and embeds (a YouTube iframe in the Markdown) run the
+   column's full width at their own ratio, 16:9 for frames. */
+.article-body img,
+.article-body video,
+.article-body iframe {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-control);
+}
+.article-body img,
+.article-body video {
+  height: auto;
+}
+.article-body iframe {
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 0;
+}
