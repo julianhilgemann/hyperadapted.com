@@ -14,5 +14,6 @@ export async function getArticles(): Promise<Article[]> {
 /** Where a card leads: the channel it lives on, or its page here. */
 export const articleHref = (article: Article) => article.data.href ?? url(`/articles/${article.slug}`);
 
+/** In UTC, like the `datetime` attribute beside it, so every build prints the same day. */
 export const formatDate = (date: Date) =>
-    date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+    date.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });

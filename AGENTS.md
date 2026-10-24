@@ -33,7 +33,7 @@ The site is served at `https://hyperadapted.com` (`site` in `astro.config.mjs`).
 - `draft: true` keeps a file out of the build entirely.
 - No `image`: `ArticleCard` draws a cover in the category's tone with the category's mark.
 
-The three articles that ship are placeholders that say so in their last line. Replace them.
+`welcome-to-hyperadapted`, `datasketches` and `notes-on-sound` are placeholders that say so in their last line. Replace them. `flyby` and `neon-maze` are real: YouTube Shorts, dated to the second of their upload (UTC) so they sort above the placeholders from the same day, with a 16:9 centre crop of the Short's frame as the cover.
 
 Category → tone: Writing is `info` (blue: structure, thought), Audiovisual and Music are `primary` (orange: the expressive end). The tone colours the card's eyebrow, arrow and cover, and the article page's accents.
 
