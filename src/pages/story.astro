@@ -7,17 +7,18 @@ import ScrollCue from "../components/ScrollCue.astro";
 import { mainSite } from "../data/site";
 import { url } from "../lib/url";
 
-// julianhilgemann.com's Story, chapter for chapter, with the links mirrored.
-// There, chapters 1 and 2 point here, to the expressive half; here, the
-// compression chapters 3 to 6 point to the work behind them on that site and
-// on GitHub, and chapters 1, 2 and 7 stay on this one. Copy and figures are
-// the same on both sites, so port a change to either.
+// The Story: the whole arc from signal to number and back, for both sites.
+// It started on julianhilgemann.com and has lived only here since 2026-10-25;
+// that site's /story forwards here with the #chapter kept, and its homepage
+// deep-links into chapters 4 and 7. The compression chapters 3 to 6 point to
+// the work behind them on that site and on GitHub; chapters 1, 2 and 7 stay
+// on this one.
 const MAIN_PLATFORM = mainSite("story", "/about#platform");
 const MAIN_BI = mainSite("story", "/about#bi");
 
 // Figure labels, chapter numbers and tags only restate the prose beside them,
-// so they travel as expressions: the llms generator flattens literal markup
-// into the page docs, where these would read as duplicate copy.
+// so they travel as expressions and the chapter copy stays literal markup (on
+// julianhilgemann.com an llms generator flattened that markup into docs).
 const ui = {
     scrollHint: "Scroll to compress.",
     chapters: ["01", "02", "03", "04", "05", "06", "07"],
