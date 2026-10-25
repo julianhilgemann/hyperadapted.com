@@ -9,7 +9,7 @@
  *
  * When that timeline finishes the figure starts its idle loop, so a finished
  * chapter still looks alive. The loop stops when the chapter leaves the
- * viewport. (The travelling light lives on the contact buttons now — see
+ * viewport. (The travelling light lives on the Follow buttons — see
  * `.orbit-ring` in global.css — not on the cards.)
  *
  * Hooks:

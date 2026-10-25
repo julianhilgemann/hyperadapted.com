@@ -2,7 +2,7 @@
 
 Hyperadapted is Julian Hilgemann's creative alias, and this site is its hub: it gathers the writing, audiovisual work and music in one place and links out to the channels where each piece lives (Instagram, Medium, YouTube, Substack, all `@hyperadapted`). Static Astro 4 + Tailwind 3 site, English, deployed to GitHub Pages by `.github/workflows/deploy.yml` on every push to `main`.
 
-It is the sister site of [julianhilgemann.com](https://github.com/julianhilgemann/julianhilgemann.com) and must look like it: same tokens, same components, same motion. That site tells the story "signal → number → signal": data work compresses the world into a number, expressive work opens it back up. julianhilgemann.com is the compression half (blue leads there); Hyperadapted is the expansion half (orange leads here). Each site's footer names the other as its other half.
+It is the sister site of [julianhilgemann.com](https://github.com/julianhilgemann/julianhilgemann.com) and must look like it: same tokens, same components, same motion. Together they tell one story, "signal → number → signal", in full on this site's `/story`: data work compresses the world into a number, expressive work opens it back up. julianhilgemann.com is the compression half (blue leads there); Hyperadapted is the expansion half (orange leads here). Each site's footer names the other as its other half.
 
 ## Site map
 
@@ -11,7 +11,7 @@ It is the sister site of [julianhilgemann.com](https://github.com/julianhilgeman
 | `/` | `src/pages/index.astro` | Hero (`Hero.astro`: gradient sheet, headline whose last word cycles, "sound." → "motion." …), "Latest" (the three newest projects), `FollowCTA`. Motion: `home.ts`. |
 | `/projects` | `projects/index.astro` | Every published project, newest first; the newest card spans both columns. Motion: `page.ts`. |
 | `/projects/<slug>` | `projects/[slug].astro` | One page per project hosted here (no `href`). Motion: `page.ts`. |
-| `/story` | `story.astro` | julianhilgemann.com's Story on this site's theme: seven chapters and a coda, one `StoryField` figure each and `NumberAnatomy` in chapter 6. Motion: `story.ts` + `story-field.ts`. See "Story" below. |
+| `/story` | `story.astro` | The Story, moved here from julianhilgemann.com: seven chapters and a coda, one `StoryField` figure each and `NumberAnatomy` in chapter 6. Motion: `story.ts` + `story-field.ts`. See "Story" below. |
 | `/about` | `about.astro` | What Hyperadapted is, the three strands (Writing, Audiovisual, Music), "Why Hyperadapted", the channels as link cards, "The other half". Motion: `page.ts`. |
 | legal | `impressum`, `datenschutz`, `cookie-einstellungen` | German, as German law expects. Copied from julianhilgemann.com with the external-links list cut to this site's channels. |
 | `404` | `404.astro` | |
@@ -43,9 +43,30 @@ Category → tone: Writing is `info` (blue: structure, thought), Audiovisual and
 
 ## Story
 
-`/story` is julianhilgemann.com's `/story`: the same copy, chapters and figures, the whole arc from signal to number and back, on this site's dark theme. `StoryField.astro`, `NumberAnatomy.astro`, `story.ts` and `story-field.ts` are copied unchanged (their colours come from the tokens, so they follow the theme), and the page's `<style>` block is the main site's too. Change them on julianhilgemann.com first and copy them across, so a `diff` of the four files stays empty.
+`/story` tells the arc both sites share: reality arrives as dense signal, data work compresses it down to a number, and expressive work opens that number back up. It was built on julianhilgemann.com and has lived only here since 2026-10-25. That site's `/story` forwards here with the `#chapter` kept, and its homepage links chapter 4 (`#structure`) and chapter 7 (`#expansion`), so keep the chapter ids. The source of the framing is the "Website Storyboard: Signal to Number and Back" doc, which also holds the copy variants and the slogan bank.
 
-Only the links differ, mirrored: there, chapters 1 and 2 point here as "The other half"; here, the compression chapters 3 to 6 point to the work behind them (fx_macro_platform and hybrid_sales_pipeline_forecast on GitHub, and julianhilgemann.com's `/about#platform` and `/about#bi` through `mainSite("story", path)`), while chapters 1 and 2 stay on About and chapter 7 and the coda lead to `/projects`. The coda's third button is Follow, not Contact.
+- **Links.** Chapters 1 and 2 go to About (`/about`, `/about#name`). The compression chapters 3 to 6 go to the work behind them: fx_macro_platform and hybrid_sales_pipeline_forecast on GitHub, and julianhilgemann.com's `/about#platform` and `/about#bi` through `mainSite("story", path)`. Chapter 7 and the coda lead to `/projects`; the coda's third button is Follow.
+- **Files.** `story.astro` holds the copy and the chapter layout. `StoryField.astro` draws one still frame per chapter, seeded so the field is the same cloud in every build; `NumberAnatomy.astro` is chapter 6. `story.ts` and `story-field.ts` are the motion. Figure labels, chapter numbers and tags travel through the frontmatter `ui` object, and the chapter copy is eight literal sections rather than a `.map()`.
+- **Tone.** Each chapter section carries a tone class: neutral for 1, blue (`tone-info`, system and structure) for 3 to 5, orange (`tone-primary`, belief, the number, the burst) for 2, 6 and 7. Chapter 7 is the one place both accents appear at once, so the expansion is felt rather than read.
+- **Type.** It compresses with the narrative: measure and letter-spacing tighten from chapter 1 to 6, weight rises toward the number, which is set in monospace, and chapter 7 opens up again. The steps are `.ch-1` … `.ch-7` in the page's `<style>` block, small enough to feel rather than see.
+- **Phones.** Figures that share a screen with text are sized by height below `lg` (`max-height` in `svh` plus `width: auto`), with a tighter step under `(max-height: 760px)` for short phones like an SE. Check a change at 375x667.
+
+### How a chapter behaves
+
+Each chapter is a full-height section (`100svh`) holding one card, and `story.ts` gives every chapter a single paused timeline that runs **once, on entry**. Nothing on this page is scrubbed: a reader should never have to keep scrolling to see a chapter finish.
+
+- The card slides up and fades in first (a rise without scale: scaling a card that wide dragged its headline sideways); the marker, the masked headline lines, the paragraphs and the quiet link follow on the same timeline, so a chapter is never half-arrived. The figure starts at 0.22s — while the card is still moving — and lands just after it settles.
+- Because the timelines are built paused at load, every `from` claims its hidden state immediately and nothing flashes before the reader gets there. The headline is split at entry rather than at load, so a resize on the way down cannot leave stale line breaks clipping inside their masks.
+- A trigger that the page loads *past* never fires, which would leave a deep link (`/story#structure`, linked from julianhilgemann.com's homepage) staring at an invisible card. Each chapter therefore also checks its own position once at setup and plays immediately if it is already at or above the start line. Keep that check if you touch the entrance.
+- When the timeline completes the figure starts its idle loop, which is the answer to "the chapter is finished, but the page should not look dead". The cards keep a plain border; the travelling conic light lives on the Follow buttons instead, as the `.orbit-ring` utility in `global.css` (`@property --orbit-angle`), so the one action on a page is the thing that keeps moving.
+
+`StoryField` figures have two phases in `story-field.ts`: `fieldEnter(fig, tl, at)` adds tweens to the chapter's timeline, and `fieldIdle(fig)` is what keeps moving afterwards — bands drifting, rays flickering, a lineage edge pulsing, the forecast's dashes marching, the coda turning. The measurement figure borrows the choices-layer idiom from `NumberAnatomy`: every second or two one sample goes out and another lights, because the selection behind a number is never finished. Every idle is wrapped in `whileVisible`, which pauses it off-screen — eight chapters of endless animation would otherwise all run at once.
+
+Figure geometry is in viewBox units. Anything pivoting on a point *in the drawing* (the inference fan on its last data point, the burst on its core) must use GSAP's `svgOrigin`, not `transformOrigin`, which measures from the element's own bounding box. And each figure's markup is its animated END state, so reduced-motion and no-JS visitors see exactly where the entrance lands.
+
+### Still to build
+
+The page ships as text and still frames, which is also the reduced-motion version and can never be blocked by the animation work. Not built yet: the one persistent particle field whose state blends per chapter (Three.js or regl behind an Astro island, driven by ScrollTrigger), the held beat at the number, chapter 7's opt-in audio with the Web Audio analyser and its **Expand** button, and a 10–12 second loop of the whole arc for julianhilgemann.com's homepage hero. The storyboard's plan is to prototype the field states in TouchDesigner and port them to GLSL.
 
 ## Channels
 

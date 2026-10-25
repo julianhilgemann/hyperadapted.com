@@ -1,16 +1,15 @@
 ---
 import { color, rgba } from "../styles/tokens.mjs";
 
-// "Anatomy of a number" — the About page's core idea drawn out: a dashboard
+// "Anatomy of a number", Story chapter 6, drawn out: a dashboard
 // figure as the top layer over its definitions, its data model, and the
 // choices about what to leave out (100 dots, a few kept).
 //
 // The markup is the exploded end state, which is also what reduced motion and
-// no-JS visitors see. src/scripts/about.ts collapses the layers and opens
-// them on scroll ([data-layer] carries both y positions).
+// no-JS visitors see. src/scripts/story.ts collapses the layers and opens
+// them as the chapter arrives ([data-layer] carries both y positions).
 //
-// Every visible string arrives through props/expressions: the llms generator
-// flattens literal markup, and none of this should read as page copy.
+// Every visible string arrives through props: none of this is page copy.
 interface Props {
     /** Top to bottom: the number, definitions, data model, choices. */
     labels: string[];
@@ -269,7 +268,7 @@ const order = [3, 2, 1, 0];
     .anatomy-label-dot-accent {
         fill: rgb(var(--color-primary));
     }
-    /* Hover focus (set by about.ts): the lifted layer's label lights up. */
+    /* Hover focus (set by story.ts): the lifted layer's label lights up. */
     [data-layer].is-focus .anatomy-label text {
         fill: rgb(var(--color-ink-strong));
     }

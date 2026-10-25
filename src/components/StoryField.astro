@@ -6,12 +6,10 @@ import { color } from "../styles/tokens.mjs";
 // spacing, brightness — which is what makes the chapters read as one idea.
 //
 // The markup is each state's END state — what reduced-motion and no-JS
-// visitors see (see AGENTS.md on animated figures). src/scripts/story-field.ts
-// sets the starting state and scrubs to this one against the figure's own
-// scroll range, addressing the parts through the `data-f` hooks below.
-// Every string arrives as a prop: the labels only restate the prose beside
-// them, so routing them through expressions keeps them out of the generated
-// docs.
+// visitors see (see AGENTS.md, "Story"). src/scripts/story-field.ts sets the
+// starting state and tweens to this one as the chapter arrives, addressing
+// the parts through the `data-f` hooks below. Every string arrives as a prop:
+// the labels only restate the prose beside them.
 
 interface Props {
     state: "signal" | "belief" | "measurement" | "structure" | "inference" | "expansion" | "coda";
