@@ -27,9 +27,9 @@ npm run dev      # http://localhost:4321/
 npm run build    # static site in dist/
 ```
 
-## Add an article
+## Add a project
 
-Add a Markdown file to `src/content/articles/`:
+Add a Markdown file to `src/content/projects/`:
 
 ```md
 ---
@@ -37,11 +37,11 @@ title: "A new piece"
 description: "One sentence for the card and the link preview."
 date: 2026-11-01
 category: Writing          # Writing | Audiovisual | Music
-image: /assets/articles/a-new-piece.webp   # optional, 16:9, under public/
+image: /assets/projects/a-new-piece.webp   # optional, 16:9, under public/
 href: https://medium.com/@hyperadapted/... # optional: link out instead of hosting it here
 ---
 
-The article, if it lives here.
+The page, if it lives here.
 ```
 
 With `href`, the card links straight to that post or video and no page is built here. See [AGENTS.md](AGENTS.md) for the full reference.

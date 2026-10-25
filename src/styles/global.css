@@ -1,5 +1,5 @@
 /* Site stylesheet, loaded by the layout. Copied from julianhilgemann.com,
-   minus what only that site uses, plus the article body styles at the end.
+   minus what only that site uses, plus the project body styles at the end.
 
    The design system lives in three places:
      tokens.mjs      every value (colour, type, space, shape, motion), from
@@ -378,44 +378,44 @@ body::before {
   }
 }
 
-/* --- Article body ---
-   Markdown from src/content/articles, rendered on /articles/<slug>. The
+/* --- Project body ---
+   Markdown from src/content/projects, rendered on /projects/<slug>. The
    palette is token-only (no typography plugin), so every element the
    Markdown can produce is styled here. Body copy is muted like the rest of
    the site; emphasis and headings step up the ink scale; accents follow the
-   article's tone, set on the <article>. */
-.article-body {
+   project's tone, set on the <article>. */
+.project-body {
   font-size: 1.125rem;
   line-height: 1.8;
   color: rgb(var(--color-ink-muted));
 }
-.article-body > * + * {
+.project-body > * + * {
   margin-top: 1.25em;
 }
-.article-body h2,
-.article-body h3 {
+.project-body h2,
+.project-body h3 {
   color: rgb(var(--color-ink-strong));
   font-weight: 700;
 }
-.article-body h2 {
+.project-body h2 {
   margin-top: 2.25em;
   font-size: var(--text-h3);
   line-height: var(--leading-h3);
   letter-spacing: var(--tracking-h3);
 }
-.article-body h3 {
+.project-body h3 {
   margin-top: 1.75em;
   font-size: 1.125rem;
 }
-.article-body h2 + *,
-.article-body h3 + * {
+.project-body h2 + *,
+.project-body h3 + * {
   margin-top: 0.75em;
 }
-.article-body strong {
+.project-body strong {
   color: rgb(var(--color-ink));
   font-weight: 600;
 }
-.article-body a {
+.project-body a {
   color: rgb(var(--color-ink));
   text-decoration: underline;
   text-decoration-color: rgb(var(--tone) / 0.45);
@@ -425,36 +425,36 @@ body::before {
     color var(--dur-fast) var(--ease-out),
     text-decoration-color var(--dur-fast) var(--ease-out);
 }
-.article-body a:hover {
+.project-body a:hover {
   color: rgb(var(--tone));
   text-decoration-color: rgb(var(--tone));
 }
-.article-body ul,
-.article-body ol {
+.project-body ul,
+.project-body ol {
   padding-left: 1.25rem;
 }
-.article-body ul {
+.project-body ul {
   list-style: disc;
 }
-.article-body ol {
+.project-body ol {
   list-style: decimal;
 }
-.article-body li + li {
+.project-body li + li {
   margin-top: 0.5em;
 }
-.article-body li::marker {
+.project-body li::marker {
   color: rgb(var(--color-ink-faint));
 }
-.article-body blockquote {
+.project-body blockquote {
   padding-left: 1.25rem;
   border-left: 2px solid rgb(var(--tone) / 0.6);
   color: rgb(var(--color-ink));
 }
-.article-body hr {
+.project-body hr {
   margin-block: 2.5em;
   border-color: var(--line-subtle);
 }
-.article-body code {
+.project-body code {
   font-family: var(--font-mono);
   font-size: 0.875em;
   padding: 0.1em 0.35em;
@@ -463,7 +463,7 @@ body::before {
   background: var(--wash);
   color: rgb(var(--color-ink));
 }
-.article-body pre {
+.project-body pre {
   overflow-x: auto;
   padding: 1.25rem;
   border: 1px solid var(--line);
@@ -472,7 +472,7 @@ body::before {
   font-size: 0.875rem;
   line-height: 1.7;
 }
-.article-body pre code {
+.project-body pre code {
   padding: 0;
   border: 0;
   background: none;
@@ -480,18 +480,18 @@ body::before {
 }
 /* Images, video and embeds (a YouTube iframe in the Markdown) run the
    column's full width at their own ratio, 16:9 for frames. */
-.article-body img,
-.article-body video,
-.article-body iframe {
+.project-body img,
+.project-body video,
+.project-body iframe {
   display: block;
   width: 100%;
   border-radius: var(--radius-control);
 }
-.article-body img,
-.article-body video {
+.project-body img,
+.project-body video {
   height: auto;
 }
-.article-body iframe {
+.project-body iframe {
   aspect-ratio: 16 / 9;
   height: auto;
   border: 0;

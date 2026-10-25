@@ -4,7 +4,7 @@
  * The site runs on its own domain, but it started under
  * julianhilgemann.github.io/hyperadapted.com/ (a `base` in astro.config.mjs),
  * and Astro does not prefix links with a base itself. Every internal href and
- * public asset therefore goes through `url()`: url("/articles"). External
+ * public asset therefore goes through `url()`: url("/projects"). External
  * links and #anchors pass through unchanged. Without a `base`, BASE is empty
  * and `url()` returns the path as it is.
  */
@@ -15,5 +15,5 @@ export const isPreview = BASE !== "";
 
 export const url = (path: string) => (path.startsWith("/") ? `${BASE}${path}` : path);
 
-/** A pathname without the base or a trailing slash, for comparing routes: "/articles". */
+/** A pathname without the base or a trailing slash, for comparing routes: "/projects". */
 export const route = (pathname: string) => pathname.slice(BASE.length).replace(/\/$/, "") || "/";

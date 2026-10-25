@@ -1,5 +1,5 @@
 /**
- * The three strands of the work. An article's `category` must be one of these
+ * The three strands of the work. A project's `category` must be one of these
  * (src/content/config.ts checks it at build time), and the category decides
  * the card's tone and the mark on its cover when it has no image.
  *

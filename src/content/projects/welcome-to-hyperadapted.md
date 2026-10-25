@@ -9,7 +9,7 @@ Hyperadapted is where the creative work comes together. Essays, audiovisual sket
 
 ## What you'll find
 
-- **Writing.** Longer pieces on perception, data and making things. Some are published here, others on Medium or Substack, and the Articles page links to each one wherever it lives.
+- **Writing.** Longer pieces on perception, data and making things. Some are published here, others on Medium or Substack, and the Projects page links to each one wherever it lives.
 - **Audiovisual.** Datasketches: short pieces where a measurement drives the picture. The finished ones go up on YouTube, the work in progress on Instagram.
 - **Music.** Tracks and sound pieces, usually released with the visuals they drive.
 
