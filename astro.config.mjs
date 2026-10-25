@@ -8,4 +8,11 @@ import tailwind from '@astrojs/tailwind';
 export default defineConfig({
     site: 'https://hyperadapted.com',
     integrations: [tailwind()],
+    // The work was listed under /articles until it took julianhilgemann.com's
+    // name for it. GitHub Pages serves no server redirects, so these build as
+    // static pages that meta-refresh and carry a canonical link.
+    redirects: {
+        '/articles': '/projects',
+        '/articles/[slug]': '/projects/[slug]',
+    },
 });

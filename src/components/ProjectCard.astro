@@ -1,7 +1,7 @@
 ---
-// One article: julianhilgemann.com's project card, fed from the articles
+// One project: julianhilgemann.com's project card, fed from the projects
 // collection. The whole card is the link (a stretched link on its one
-// action). An article that lives elsewhere links out with that channel's
+// action). A project that lives elsewhere links out with that channel's
 // mark and verb ("Watch on YouTube"); one hosted here reads "Read".
 //
 // The card is drawn in its category's tone (src/data/categories.ts). Without
@@ -11,18 +11,18 @@
 import SocialIcon from "./SocialIcon.astro";
 import { categories } from "../data/categories";
 import { socialFor } from "../data/socials";
-import { articleHref, formatDate, type Article } from "../lib/articles";
+import { projectHref, formatDate, type Project } from "../lib/projects";
 import { url } from "../lib/url";
 
 interface Props {
-    article: Article;
+    project: Project;
     featured?: boolean;
     /** The heading level of the title, so a card fits the page outline. */
     as?: "h2" | "h3";
 }
 
-const { article, featured = false, as: Heading = "h3" } = Astro.props;
-const { title, description, date, category, image, href } = article.data;
+const { project, featured = false, as: Heading = "h3" } = Astro.props;
+const { title, description, date, category, image, href } = project.data;
 const { tone, icon } = categories[category];
 const social = href ? socialFor(href) : undefined;
 const label = href ? (social ? `${social.verb} ${social.name}` : "Open") : "Read";
@@ -67,20 +67,20 @@ const label = href ? (social ? `${social.verb} ${social.name}` : "Open") : "Read
         <Heading class="text-h3 text-ink-strong mt-3 mb-2">{title}</Heading>
         <p class="text-ink-muted leading-relaxed">{description}</p>
 
-        <p class="article-links">
+        <p class="project-links">
             <a
-                href={articleHref(article)}
+                href={projectHref(project)}
                 target={href ? "_blank" : undefined}
                 rel={href ? "noopener noreferrer" : undefined}
-                class="article-link"
+                class="project-link"
             >
                 {social && <SocialIcon social={social} class="w-[18px] h-[18px]" />}
                 {label}<span class="sr-only">: {title}</span>
                 {
                     href ? (
-                        <svg class="article-link-arrow is-out" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg>
+                        <svg class="project-link-arrow is-out" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg>
                     ) : (
-                        <svg class="article-link-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+                        <svg class="project-link-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
                     )
                 }
             </a>
@@ -89,7 +89,7 @@ const label = href ? (social ? `${social.verb} ${social.name}` : "Open") : "Read
 </article>
 
 <style>
-    /* A cover for an article without an image: two soft lights, one in the
+    /* A cover for a project without an image: two soft lights, one in the
        card's tone and one in the other accent, over the surface, with the
        category's mark in the middle. It brightens with the card. */
     .cover-art {
@@ -114,7 +114,7 @@ const label = href ? (social ? `${social.verb} ${social.name}` : "Open") : "Read
     }
 
     /* Pushed to the foot of the card, so the links line up across a row. */
-    .article-links {
+    .project-links {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
@@ -123,7 +123,7 @@ const label = href ? (social ? `${social.verb} ${social.name}` : "Open") : "Read
         padding-top: 1.5rem;
     }
 
-    .article-link {
+    .project-link {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
@@ -134,33 +134,33 @@ const label = href ? (social ? `${social.verb} ${social.name}` : "Open") : "Read
     }
 
     /* The link covers the whole card. */
-    .article-link::after {
+    .project-link::after {
         content: "";
         position: absolute;
         inset: 0;
     }
 
-    .article-link-arrow {
+    .project-link-arrow {
         color: rgb(var(--tone));
         transition: translate var(--dur-base) var(--ease-out);
     }
 
-    .group:hover .article-link-arrow {
+    .group:hover .project-link-arrow {
         translate: 2px 0;
     }
-    .group:hover .article-link-arrow.is-out {
+    .group:hover .project-link-arrow.is-out {
         translate: 2px -2px;
     }
 
     @media (hover: hover) and (pointer: fine) {
-        .group:hover .article-link {
+        .group:hover .project-link {
             color: rgb(var(--tone));
         }
     }
 
     @media (prefers-reduced-motion: reduce) {
         .cover-art,
-        .article-link-arrow {
+        .project-link-arrow {
             transition: none;
         }
     }

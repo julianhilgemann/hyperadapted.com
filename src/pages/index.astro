@@ -1,14 +1,14 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Hero from "../components/Hero.astro";
-import ArticleCard from "../components/ArticleCard.astro";
+import ProjectCard from "../components/ProjectCard.astro";
 import FollowCTA from "../components/FollowCTA.astro";
-import { getArticles } from "../lib/articles";
+import { getProjects } from "../lib/projects";
 import { url } from "../lib/url";
 
 // The welcome page: the hero, the three newest pieces, and the way to
-// follow. Everything else is on /articles.
-const latest = (await getArticles()).slice(0, 3);
+// follow. Everything else is on /projects.
+const latest = (await getProjects()).slice(0, 3);
 ---
 
 <Layout
@@ -20,7 +20,7 @@ const latest = (await getArticles()).slice(0, 3);
     <!-- Hero Section -->
     <Hero />
 
-    <!-- The newest pieces (full list lives on /articles) -->
+    <!-- The newest pieces (full list lives on /projects) -->
     <section id="latest" class="section section-screen border-t border-line-subtle">
         <div class="page-container w-full">
             <div class="md:flex md:items-end md:justify-between md:gap-12 mb-head">
@@ -33,17 +33,17 @@ const latest = (await getArticles()).slice(0, 3);
 
             <ul data-reveal-stagger class="grid md:grid-cols-3 gap-grid">
                 {
-                    latest.map((article) => (
+                    latest.map((project) => (
                         <li>
-                            <ArticleCard article={article} />
+                            <ProjectCard project={project} />
                         </li>
                     ))
                 }
             </ul>
 
             <p class="mt-10">
-                <a href={url("/articles")} class="arrow-link">
-                    All articles
+                <a href={url("/projects")} class="arrow-link">
+                    All projects
                     <svg
                         width="18"
                         height="18"

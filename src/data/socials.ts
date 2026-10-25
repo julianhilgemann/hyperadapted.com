@@ -4,7 +4,7 @@
  * are Simple Icons 16.35.0 paths (viewBox 0 0 24 24), drawn in `currentColor`
  * so they stay in the ink until hovered.
  *
- * An article that lives on one of these (its `href`, see
+ * A project that lives on one of these (its `href`, see
  * src/content/config.ts) borrows the channel's mark and verb for its link.
  */
 export interface Social {
@@ -14,7 +14,7 @@ export interface Social {
     href: string;
     /** What lives there, in a few words. */
     note: string;
-    /** The link label an article on this channel gets: "Watch on YouTube". */
+    /** The link label a project on this channel gets: "Watch on YouTube". */
     verb: string;
     /** Hostnames that count as this channel. */
     hosts: string[];

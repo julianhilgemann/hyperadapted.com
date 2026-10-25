@@ -1,18 +1,18 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import MotionIntro from "../../components/MotionIntro.astro";
-import ArticleCard from "../../components/ArticleCard.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
 import FollowCTA from "../../components/FollowCTA.astro";
 import ScrollCue from "../../components/ScrollCue.astro";
-import { getArticles } from "../../lib/articles";
+import { getProjects } from "../../lib/projects";
 
 // Every published piece, newest first: a two-column grid of cards, the
 // newest one spanning both. The same layout as julianhilgemann.com/projects.
-const articles = await getArticles();
+const projects = await getProjects();
 ---
 
 <Layout
-    title="Articles | Hyperadapted"
+    title="Projects | Hyperadapted"
     description="Every piece from Hyperadapted: essays, audiovisual sketches and music, with links to the channels where each one lives."
     fullWidth={true}
 >
@@ -21,7 +21,7 @@ const articles = await getArticles();
     <section class="section-intro page-container relative isolate">
         <div class="max-w-3xl">
             <h1 data-page-title data-intro class="text-h1 text-ink-strong mb-8">
-                Articles
+                Projects
             </h1>
             <p data-intro data-intro-fade class="text-lead text-ink-muted">
                 Writing, audiovisual work and music, newest first. Pieces that
@@ -29,17 +29,17 @@ const articles = await getArticles();
             </p>
         </div>
 
-        <ScrollCue href="#article-list" label="Scroll to the articles" data-intro data-intro-fade />
+        <ScrollCue href="#project-list" label="Scroll to the projects" data-intro data-intro-fade />
     </section>
 
-    <section id="article-list" class="pb-section scroll-mt-nav">
+    <section id="project-list" class="pb-section scroll-mt-nav">
         <div class="page-container">
             {
-                articles.length ? (
+                projects.length ? (
                     <ul data-reveal-batch class="grid lg:grid-cols-2 gap-grid">
-                        {articles.map((article, i) => (
+                        {projects.map((project, i) => (
                             <li class:list={[i === 0 && "lg:col-span-2"]}>
-                                <ArticleCard article={article} featured={i === 0} as="h2" />
+                                <ProjectCard project={project} featured={i === 0} as="h2" />
                             </li>
                         ))}
                     </ul>
