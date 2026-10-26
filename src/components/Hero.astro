@@ -4,8 +4,8 @@ import GradientSheet from "./GradientSheet.astro";
 import ScrollCue from "./ScrollCue.astro";
 import { url } from "../lib/url";
 
-// julianhilgemann.com's hero, run the other way: there a measurement ends in
-// a number, here data turns back into something you can feel. The
+// julianhilgemann.com's hero, mirrored: the same "Where systems turn data
+// into", but here it ends in something you can feel, not a decision. The
 // headline's last word takes turns (home.ts). "sound." is literal markup, so
 // it is what no-JS and reduced-motion visitors see; the rest travel as an
 // expression. The words are orange where the main site's are blue: orange is
@@ -47,7 +47,7 @@ const accent = "cycle-word text-transparent bg-clip-text bg-gradient-to-r from-p
                 data-intro
                 class="text-display text-ink-strong mb-6 md:mb-8"
             >
-                Where data turns into <span data-cycle class="cycle"><span data-cycle-item><span class={accent}>sound.</span></span>{outcomes.map((word) => (
+                Where systems turn data into <span data-cycle class="cycle"><span data-cycle-item><span class={accent}>sound.</span></span>{outcomes.map((word) => (
                     <span data-cycle-item aria-hidden="true"><span class={accent}>{word}.</span></span>
                 ))}</span>
             </h1>
