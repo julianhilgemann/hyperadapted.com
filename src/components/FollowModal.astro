@@ -8,17 +8,22 @@ import { socials } from "../data/socials";
 import { EMAIL } from "../data/site";
 ---
 
+<!-- The dialog takes focus itself (tabindex, autofocus), so opening it
+     does not ring the close button. Capped at the visible viewport and
+     tighter below sm, so five channels fit a phone screen. -->
 <dialog
     id="follow-modal"
-    class="bg-transparent p-0 m-auto max-w-lg w-[90%]"
+    tabindex="-1"
+    autofocus
+    class="bg-transparent p-0 m-auto max-w-lg w-[calc(100%-2rem)] max-h-[calc(100dvh-2rem)] overflow-y-auto"
 >
     <div
-        class="panel bg-surface shadow-panel p-8 sm:p-10 relative overflow-hidden"
+        class="panel bg-surface shadow-panel p-6 sm:p-10 relative overflow-hidden"
     >
         <!-- Close Button -->
         <button
             id="close-follow-modal"
-            class="icon-btn absolute top-4 right-4"
+            class="icon-btn absolute top-3 right-3 sm:top-4 sm:right-4"
             aria-label="Close dialog"
         >
             <svg
@@ -39,14 +44,15 @@ import { EMAIL } from "../data/site";
 
         <!-- Content -->
         <div class="text-center">
-            <h2 class="text-3xl font-bold tracking-tight mb-4 text-ink-strong">Follow Hyperadapted</h2>
-            <p class="text-ink-muted mb-8 text-lg leading-relaxed">
+            <!-- px clears the close button on both sides, so the title stays centred. -->
+            <h2 class="text-2xl sm:text-3xl font-bold tracking-tight mb-3 sm:mb-4 px-8 text-ink-strong">Follow Hyperadapted</h2>
+            <p class="text-ink-muted mb-6 sm:mb-8 text-base sm:text-lg leading-relaxed">
                 New pieces land on these channels first. Pick the one that
                 suits how you like to read, watch or listen.
             </p>
         </div>
 
-        <ul class="grid gap-3">
+        <ul class="grid gap-2 sm:gap-3">
             {
                 socials.map((social) => (
                     <li>
@@ -71,7 +77,7 @@ import { EMAIL } from "../data/site";
             }
         </ul>
 
-        <p class="mt-8 text-sm text-ink-faint text-center">
+        <p class="mt-6 sm:mt-8 text-sm text-ink-faint text-center">
             Anything else? <a href={`mailto:${EMAIL}`} class="text-link">Write an email</a>.
         </p>
     </div>
@@ -98,6 +104,8 @@ import { EMAIL } from "../data/site";
                     event_label: trigger.getAttribute("data-location") || "unknown",
                 });
                 dialog.showModal();
+                // Safari ignores autofocus on a dialog; focus it by hand.
+                dialog.focus();
             });
         });
 
@@ -149,6 +157,10 @@ import { EMAIL } from "../data/site";
         }
     }
 
+    dialog:focus {
+        outline: none;
+    }
+
     dialog::backdrop {
         background: var(--scrim);
         backdrop-filter: blur(var(--scrim-blur));
@@ -167,14 +179,14 @@ import { EMAIL } from "../data/site";
     }
 
     /* One channel per row: the compact phone layout of the hub's link
-       cards (global.css `.link-card`), kept at every width so four rows
-       fit the dialog. */
+       cards (global.css `.link-card`), kept at every width so five rows
+       fit the dialog; a little tighter on phones. */
     .follow-row {
         display: grid;
         grid-template-columns: auto 1fr auto;
         align-items: center;
-        gap: 1rem;
-        padding: 0.875rem 1rem;
+        gap: 0.75rem;
+        padding: 0.75rem 0.875rem;
         border: 1px solid var(--line);
         border-radius: var(--radius-card);
         background-color: var(--wash-subtle);
@@ -184,6 +196,12 @@ import { EMAIL } from "../data/site";
             background-color var(--dur-base) var(--ease-out),
             border-color var(--dur-base) var(--ease-out),
             scale var(--dur-fast) var(--ease-out);
+    }
+    @media (min-width: 640px) {
+        .follow-row {
+            gap: 1rem;
+            padding: 0.875rem 1rem;
+        }
     }
     .follow-row:active {
         scale: var(--press);
