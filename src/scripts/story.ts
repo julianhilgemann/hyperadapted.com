@@ -75,7 +75,11 @@ function chapters() {
             // Split at entry, not at load: a split made up front goes stale
             // (and clips inside its mask) if the viewport changed on the way
             // down. The lines stay split once they land (see riseLines).
-            if (title) tl.add(riseLines(title, { duration: 0.95, stagger: 0.07 }).tween, 0.18);
+            if (title) {
+                const unpin = pinBalancedBreaks(title);
+                tl.add(riseLines(title, { duration: 0.95, stagger: 0.07 }).tween, 0.18);
+                unpin();
+            }
             tl.play();
         };
 
@@ -86,6 +90,49 @@ function chapters() {
         // or above the start line plays straight away.
         if (section.getBoundingClientRect().top < window.innerHeight * 0.68) play();
     });
+}
+
+/**
+ * Headlines are `text-wrap: balance`, but iOS Safari balances the word
+ * wrappers SplitText measures badly, and the split froze its first words one
+ * per line. So the browser balances the plain text first, its line breaks are
+ * read off each word's position and pinned as <br>s, and the split only
+ * follows them. Call the returned function once the split is made: the first
+ * width change after it puts the plain text back (riseLines reverts the split
+ * on the same change; this observer is created after its one, so it runs
+ * second).
+ */
+function pinBalancedBreaks(el: HTMLElement) {
+    const text = el.textContent?.trim().replace(/\s+/g, " ") ?? "";
+    const node = el.firstChild;
+    if (el.childNodes.length !== 1 || !(node instanceof Text)) return () => {};
+
+    const lines: string[][] = [];
+    let top = -Infinity;
+    const range = document.createRange();
+    for (const match of node.data.matchAll(/\S+/g)) {
+        range.setStart(node, match.index);
+        range.setEnd(node, match.index + match[0].length);
+        const y = range.getBoundingClientRect().top;
+        if (y > top + 2) lines.push([]);
+        lines[lines.length - 1].push(match[0]);
+        top = y;
+    }
+    el.replaceChildren(
+        ...lines.flatMap((words, i) => (i ? [document.createElement("br"), words.join(" ")] : [words.join(" ")])),
+    );
+    el.style.textWrap = "wrap";
+
+    return () => {
+        const width = el.offsetWidth;
+        const watch = new ResizeObserver(() => {
+            if (el.offsetWidth === width) return;
+            watch.disconnect();
+            el.textContent = text;
+            el.style.textWrap = "";
+        });
+        watch.observe(el);
+    };
 }
 
 /**
