@@ -1,0 +1,39 @@
+{
+  "master": 0.3758,
+  "roles": {
+    "hover": {
+      "where": "Pointer enters a button, card or nav link",
+      "gain": 0.1778,
+      "file": null
+    },
+    "press": {
+      "where": "Click on a button, card or nav link",
+      "gain": 0.5623,
+      "file": null
+    },
+    "spark-hover": {
+      "where": "Pointer enters the orbiting Follow button",
+      "gain": 0.0355,
+      "file": null
+    },
+    "spark-press": {
+      "where": "Click on the orbiting Follow button",
+      "gain": 0.16,
+      "file": null
+    },
+    "sound-on": {
+      "where": "The sound switch, turned on",
+      "gain": 0.2661,
+      "file": null,
+      "shape": {
+        "start": 90,
+        "lowpass": 480
+      }
+    },
+    "sound-off": {
+      "where": "The sound switch, turned off",
+      "gain": 0.08,
+      "file": null
+    }
+  }
+}

@@ -1,0 +1,54 @@
+---
+// The sound switch, docked bottom right on every page (styles in global.css,
+// engine in src/scripts/sound.ts). Four bars stand for the sound: they
+// breathe like a quiet meter while it is on, follow the real signal while a
+// cue rings, and lie flat when it is off. The dock opts out of the site's
+// cues (`data-sound="none"`); the switch plays its own on and off.
+---
+
+<div class="sound-dock" data-sound="none">
+    <span class="sound-label" aria-hidden="true">
+        <span class="sound-label-on">Sound on</span>
+        <span class="sound-label-off">Sound off</span>
+    </span>
+    <button type="button" id="sound-toggle" class="sound-toggle" aria-label="Sound" aria-pressed="true">
+        <span class="sound-bars" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+        </span>
+    </button>
+</div>
+
+<script>
+    import { isEnabled, setEnabled, bands, ringing } from "../scripts/sound";
+
+    const toggle = document.getElementById("sound-toggle");
+    const bars = toggle ? Array.from(toggle.querySelectorAll<HTMLElement>(".sound-bars > span")) : [];
+    const still = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    if (toggle) {
+        toggle.setAttribute("aria-pressed", String(isEnabled()));
+        toggle.addEventListener("click", () => {
+            setEnabled(!isEnabled());
+            toggle.setAttribute("aria-pressed", String(isEnabled()));
+        });
+
+        // While a cue rings, the bars read it (the analyser's four bands);
+        // once it is quiet they hand back to the idle breathing.
+        let frame = 0;
+        const meter = () => {
+            const levels = bands();
+            bars.forEach((bar, i) => bar.style.setProperty("--level", levels[i].toFixed(3)));
+            if (ringing() || levels.some((l) => l > 0.02)) {
+                frame = requestAnimationFrame(meter);
+            } else {
+                frame = 0;
+                toggle.classList.remove("is-live");
+            }
+        };
+        document.addEventListener("sound:play", () => {
+            if (still.matches || frame) return;
+            toggle.classList.add("is-live");
+            frame = requestAnimationFrame(meter);
+        });
+    }
+</script>

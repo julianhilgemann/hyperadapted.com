@@ -3,6 +3,7 @@ import "../styles/global.css";
 import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import FollowModal from "../components/FollowModal.astro";
+import SoundToggle from "../components/SoundToggle.astro";
 import { url, isPreview } from "../lib/url";
 
 interface Props {
@@ -40,6 +41,10 @@ const {
 	noindex = false,
 } = Astro.props;
 
+// The Sound Lab exists under `astro dev` only. A plain import would ship its
+// script and styles even unrendered, so the build never sees this one.
+const SoundLab = import.meta.env.DEV ? (await import("../components/SoundLab.astro")).default : null;
+
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const imageURL = new URL(url(image), Astro.site);
 ---
@@ -56,6 +61,12 @@ const imageURL = new URL(url(image), Astro.site);
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<link rel="canonical" href={canonicalURL} />
+		{/* The sound switch's state, before first paint (src/scripts/sound.ts). */}
+		<script is:inline>
+			try {
+				if (localStorage.getItem("sound") === "off") document.documentElement.classList.add("sound-off");
+			} catch (e) {}
+		</script>
 		{/* A sub-path preview (a `base` in astro.config.mjs) stays out of search. */}
 		{(noindex || isPreview) && <meta name="robots" content="noindex" />}
 
@@ -196,5 +207,7 @@ const imageURL = new URL(url(image), Astro.site);
 		</main>
 		{!noFooter && <Footer />}
 		<FollowModal />
+		<SoundToggle />
+		{SoundLab && <SoundLab />}
 	</body>
 </html>

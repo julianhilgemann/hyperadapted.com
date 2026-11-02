@@ -1,0 +1,765 @@
+---
+// The Sound Lab: a panel for auditioning and tuning the UI sounds, rendered
+// by Layout.astro under `astro dev` only, so it never reaches the live site.
+//
+// Drop an audio file on a role, or pick one from disk with its file chip,
+// and the page plays it straight away; the dev server (scripts/sound-lab.mjs)
+// saves it as public/sounds/<role>.<ext> and names it in src/data/sounds.json,
+// so what you hear is what gets committed. Files named after a role
+// ("spark-press-v3.wav") can be dropped anywhere on the page. Dragging a file
+// over the page opens the panel.
+//
+// Each role's shape (start and end, fade in and out, low- and high-pass) is
+// edited under its sliders button, on a waveform of the sound. Levels and
+// shapes save to the manifest as they change; the site applies the shape on
+// every play (src/scripts/sound.ts), so the file itself stays untouched.
+---
+
+<div id="sound-lab" class="sound-lab" data-sound="none">
+    <button type="button" id="sound-lab-open" class="sound-lab-open btn btn-sm">Sound Lab</button>
+
+    <section id="sound-lab-panel" class="sound-lab-panel panel" aria-label="Sound Lab">
+        <header class="lab-head">
+            <p class="eyebrow">Sound Lab <span class="chip">dev</span></p>
+            <button type="button" id="sound-lab-close" class="icon-btn" aria-label="Close the Sound Lab">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+            </button>
+        </header>
+        <p class="lab-hint">
+            Drop a file on a role, or click its file chip to pick one. It is saved
+            to <code>public/sounds/</code>. The sliders button shapes the sound.
+        </p>
+
+        <label class="lab-master">
+            <span class="lab-name">master</span>
+            <input id="sound-lab-master" class="lab-range" type="range" min="-24" max="12" step="0.5" />
+            <output id="sound-lab-master-db" class="lab-db"></output>
+        </label>
+
+        <ul id="sound-lab-roles" class="lab-roles"></ul>
+
+        <p id="sound-lab-status" class="lab-status" aria-live="polite"></p>
+    </section>
+
+    <template id="sound-lab-row">
+        <li class="lab-row">
+            <button type="button" class="lab-play icon-btn" aria-label="Play">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"></path></svg>
+            </button>
+            <span class="lab-meta">
+                <span class="lab-name"></span>
+                <span class="lab-where"></span>
+            </span>
+            <span class="lab-file">
+                <button type="button" class="lab-source chip" title="Choose a file from disk">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3m-5 5 5-5 5 5"></path><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"></path></svg>
+                    <span class="lab-source-name"></span>
+                </button>
+                <button type="button" class="lab-icon lab-reset" aria-label="Back to the built-in sound" title="Back to the built-in sound">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path></svg>
+                </button>
+                <button type="button" class="lab-icon lab-edit" aria-expanded="false" aria-label="Shape" title="Shape: start, end, fades, filters">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h10m4 0h2M4 12h4m4 0h8M4 18h12m4 0h0"></path><circle cx="16" cy="6" r="2"></circle><circle cx="10" cy="12" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg>
+                </button>
+                <input type="file" class="lab-pick" accept="audio/*,.wav,.mp3,.ogg,.m4a,.aac,.flac,.webm,.opus" hidden />
+            </span>
+            <span class="lab-level">
+                <input class="lab-range lab-gain" type="range" min="-48" max="0" step="0.5" />
+                <output class="lab-db"></output>
+            </span>
+
+            <div class="lab-editor">
+                <canvas class="lab-wave" aria-label="Waveform: drag the handles to set start and end"></canvas>
+                <p class="lab-span">
+                    <span class="lab-start"></span>
+                    <span class="lab-length"></span>
+                    <span class="lab-end"></span>
+                </p>
+                <label class="lab-param">
+                    <span>fade in</span>
+                    <input class="lab-range" type="range" min="0" max="100" step="0.5" data-param="attack" />
+                    <output class="lab-db"></output>
+                </label>
+                <label class="lab-param">
+                    <span>fade out</span>
+                    <input class="lab-range" type="range" min="0" max="100" step="0.5" data-param="release" />
+                    <output class="lab-db"></output>
+                </label>
+                <label class="lab-param">
+                    <span>low-pass</span>
+                    <input class="lab-range" type="range" min="0" max="100" step="0.5" data-param="lowpass" />
+                    <output class="lab-db"></output>
+                </label>
+                <label class="lab-param">
+                    <span>high-pass</span>
+                    <input class="lab-range" type="range" min="0" max="100" step="0.5" data-param="highpass" />
+                    <output class="lab-db"></output>
+                </label>
+                <div class="lab-editor-foot">
+                    <button type="button" class="lab-shape-reset btn btn-sm">Reset shape</button>
+                </div>
+            </div>
+        </li>
+    </template>
+</div>
+
+<script>
+    import {
+        manifest,
+        roles,
+        play,
+        useFile,
+        useSynth,
+        setGain,
+        setMaster,
+        getBuffer,
+        now,
+        type SoundRole,
+        type Shape,
+    } from "../scripts/sound";
+    import { Wave } from "../scripts/sound-lab-wave";
+
+    const lab = document.getElementById("sound-lab")!;
+    const list = document.getElementById("sound-lab-roles")!;
+    const template = document.getElementById("sound-lab-row") as HTMLTemplateElement;
+    const master = document.getElementById("sound-lab-master") as HTMLInputElement;
+    const masterDb = document.getElementById("sound-lab-master-db")!;
+    const status = document.getElementById("sound-lab-status")!;
+
+    const AUDIO = /\.(wav|mp3|ogg|m4a|aac|flac|webm|opus)$/i;
+    const OPEN = "sound-lab-open";
+
+    const toDb = (gain: number) => (gain > 0 ? 20 * Math.log10(gain) : -Infinity);
+    const fromDb = (db: number) => Math.round(10 ** (db / 20) * 10000) / 10000;
+    const showDb = (db: number) => (db === -Infinity ? "−∞ dB" : `${db > 0 ? "+" : db < 0 ? "−" : ""}${Math.abs(db).toFixed(1)} dB`);
+    const ms = (seconds: number) => Math.round(seconds * 10000) / 10;
+
+    let quiet = 0;
+    const say = (text: string) => {
+        status.textContent = text;
+        clearTimeout(quiet);
+        quiet = window.setTimeout(() => (status.textContent = ""), 6000);
+    };
+
+    /* ── Open and close ── */
+
+    const setOpen = (open: boolean) => {
+        lab.toggleAttribute("data-open", open);
+        try {
+            sessionStorage.setItem(OPEN, open ? "1" : "");
+        } catch {}
+    };
+    document.getElementById("sound-lab-open")!.addEventListener("click", () => setOpen(true));
+    document.getElementById("sound-lab-close")!.addEventListener("click", () => setOpen(false));
+    try {
+        setOpen(sessionStorage.getItem(OPEN) === "1");
+    } catch {}
+
+    /* ── Saving ── */
+
+    const fill = (input: HTMLInputElement) => {
+        const pct = ((+input.value - +input.min) / (+input.max - +input.min)) * 100;
+        input.style.setProperty("--fill", `${pct}%`);
+    };
+
+    let saving = 0;
+    const save = (what = "Levels") => {
+        clearTimeout(saving);
+        saving = window.setTimeout(async () => {
+            const body = {
+                master: manifest.master,
+                roles: Object.fromEntries(
+                    roles.map((role) => [role, { gain: manifest.roles[role].gain, shape: manifest.roles[role].shape ?? null }]),
+                ),
+            };
+            const res = await fetch("/__sound-lab/manifest", { method: "PATCH", body: JSON.stringify(body) });
+            say(res.ok ? `${what} saved to src/data/sounds.json` : `Not saved: ${await res.text()}`);
+        }, 400);
+    };
+
+    /* ── Master ── */
+
+    master.value = String(Math.max(+master.min, toDb(manifest.master)));
+    masterDb.textContent = showDb(+master.value);
+    fill(master);
+    master.addEventListener("input", () => {
+        setMaster(fromDb(+master.value));
+        masterDb.textContent = showDb(+master.value);
+        fill(master);
+    });
+    master.addEventListener("change", () => {
+        play("press", null, true);
+        save();
+    });
+
+    /* ── Shape parameters ──
+       Each slider runs 0–100; these map it to the value it stands for.
+       Fades are quadratic, so the first millimetres are fine-grained; filter
+       corners are logarithmic, and the end of the scale is "off". */
+
+    type ParamKey = "attack" | "release" | "lowpass" | "highpass";
+    interface Param {
+        toValue(pos: number): number | undefined;
+        toPos(value?: number): number;
+        show(value?: number): string;
+    }
+    const fade = (max: number): Param => ({
+        toValue: (p) => Math.round(max * (p / 100) ** 2) || undefined,
+        toPos: (v = 0) => 100 * Math.sqrt(v / max),
+        show: (v = 0) => `${v} ms`,
+    });
+    const corner = (lo: number, hi: number, off: "lo" | "hi"): Param => ({
+        toValue: (p) => {
+            if ((off === "lo" && p <= 0) || (off === "hi" && p >= 100)) return undefined;
+            const f = lo * (hi / lo) ** (p / 100);
+            return f >= 1000 ? Math.round(f / 10) * 10 : Math.round(f);
+        },
+        toPos: (v) => (v == null ? (off === "lo" ? 0 : 100) : (100 * Math.log(v / lo)) / Math.log(hi / lo)),
+        show: (v) => (v == null ? "off" : v >= 1000 ? `${(v / 1000).toFixed(1)} kHz` : `${v} Hz`),
+    });
+    const PARAMS: Record<ParamKey, Param> = {
+        attack: fade(500),
+        release: fade(2000),
+        lowpass: corner(200, 20000, "hi"),
+        highpass: corner(20, 5000, "lo"),
+    };
+
+    const shapeOf = (role: SoundRole): Shape => manifest.roles[role].shape ?? {};
+    const setShape = (role: SoundRole, change: Partial<Record<keyof Shape, number | undefined>>) => {
+        const shape: Shape = { ...shapeOf(role), ...change };
+        for (const key of Object.keys(shape) as (keyof Shape)[]) if (shape[key] === undefined) delete shape[key];
+        manifest.roles[role].shape = Object.keys(shape).length ? shape : undefined;
+    };
+
+    /* ── Roles ── */
+
+    interface Row {
+        el: HTMLElement;
+        wave: Wave;
+        editing: boolean;
+        sync: () => void;
+    }
+    const rows = new Map<SoundRole, Row>();
+
+    const refresh = (role: SoundRole) => {
+        const row = rows.get(role)!;
+        const { file, source } = manifest.roles[role];
+        row.el.querySelector(".lab-source-name")!.textContent = file ? (source ?? file.split("/").pop()!) : "built-in";
+        row.el.classList.toggle("has-file", Boolean(file));
+        row.el.classList.toggle("has-shape", Boolean(manifest.roles[role].shape));
+        row.sync();
+    };
+
+    /** Draw the role's current sound in its editor, if the editor is open. */
+    const loadWave = async (role: SoundRole) => {
+        const row = rows.get(role)!;
+        if (!row.editing) return;
+        row.wave.setBuffer(await getBuffer(role));
+        row.sync();
+    };
+
+    const assign = async (role: SoundRole, file: File) => {
+        const data = await file.arrayBuffer();
+        const row = rows.get(role)!;
+        const trimmed = shapeOf(role).start != null || shapeOf(role).end != null;
+        row.el.classList.add("is-busy");
+        try {
+            await useFile(role, data);
+        } catch {
+            row.el.classList.remove("is-busy");
+            return say(`${file.name}: this browser cannot decode it.`);
+        }
+        // Start and end belonged to the old sound (the server drops them too).
+        setShape(role, { start: undefined, end: undefined });
+        play(role, null, true);
+        loadWave(role);
+        const res = await fetch(`/__sound-lab/sound?role=${role}&name=${encodeURIComponent(file.name)}`, {
+            method: "PUT",
+            body: data,
+        });
+        row.el.classList.remove("is-busy");
+        if (!res.ok) return say(`${file.name} plays, but was not saved: ${await res.text()}`);
+        manifest.roles[role] = await res.json();
+        refresh(role);
+        say(`${role} ← ${file.name}, saved as public${manifest.roles[role].file}${trimmed ? " (start and end reset)" : ""}`);
+    };
+
+    const reset = async (role: SoundRole) => {
+        const res = await fetch(`/__sound-lab/sound?role=${role}`, { method: "DELETE" });
+        if (!res.ok) return say(`Not reset: ${await res.text()}`);
+        manifest.roles[role] = await res.json();
+        useSynth(role);
+        refresh(role);
+        loadWave(role);
+        play(role, null, true);
+        say(`${role} is back on the built-in sound`);
+    };
+
+    for (const role of roles) {
+        const el = template.content.firstElementChild!.cloneNode(true) as HTMLElement;
+        const q = <T extends Element = HTMLElement>(sel: string) => el.querySelector<T>(sel)!;
+
+        q(".lab-name").textContent = role;
+        const where = q(".lab-where");
+        where.textContent = where.title = manifest.roles[role].where;
+        q(".lab-play").setAttribute("aria-label", `Play ${role}`);
+        q(".lab-play").addEventListener("click", () => play(role, null, true));
+        q(".lab-reset").addEventListener("click", () => reset(role));
+
+        // Pick from disk.
+        const pick = q<HTMLInputElement>(".lab-pick");
+        q(".lab-source").addEventListener("click", () => pick.click());
+        pick.addEventListener("change", () => {
+            const file = pick.files?.[0];
+            pick.value = "";
+            if (file) assign(role, file);
+        });
+
+        // Level.
+        const gain = q<HTMLInputElement>(".lab-gain");
+        const db = q(".lab-level .lab-db");
+        gain.setAttribute("aria-label", `${role} level`);
+        gain.value = String(Math.max(+gain.min, toDb(manifest.roles[role].gain)));
+        db.textContent = showDb(+gain.value);
+        fill(gain);
+        gain.addEventListener("input", () => {
+            setGain(role, fromDb(+gain.value));
+            db.textContent = showDb(+gain.value);
+            fill(gain);
+        });
+        gain.addEventListener("change", () => {
+            play(role, null, true);
+            save();
+        });
+
+        // Shape: the waveform sets start and end, the sliders the rest.
+        const wave = new Wave(q<HTMLCanvasElement>(".lab-wave"), (start, end, done) => {
+            const full = wave.duration;
+            setShape(role, {
+                start: start > 0.0005 ? ms(start) : undefined,
+                end: end < full - 0.0005 ? ms(end) : undefined,
+            });
+            row.sync();
+            el.classList.toggle("has-shape", Boolean(manifest.roles[role].shape));
+            if (done) {
+                play(role, null, true);
+                save("Shape");
+            }
+        });
+        const params = Array.from(el.querySelectorAll<HTMLInputElement>("[data-param]"));
+        for (const input of params) {
+            const key = input.dataset.param as ParamKey;
+            const out = input.parentElement!.querySelector("output")!;
+            input.addEventListener("input", () => {
+                setShape(role, { [key]: PARAMS[key].toValue(+input.value) });
+                out.textContent = PARAMS[key].show(shapeOf(role)[key]);
+                fill(input);
+                row.sync();
+                el.classList.toggle("has-shape", Boolean(manifest.roles[role].shape));
+            });
+            input.addEventListener("change", () => {
+                play(role, null, true);
+                save("Shape");
+            });
+        }
+
+        const row: Row = {
+            el,
+            wave,
+            editing: false,
+            sync() {
+                const shape = shapeOf(role);
+                for (const input of params) {
+                    const key = input.dataset.param as ParamKey;
+                    if (document.activeElement !== input) input.value = String(PARAMS[key].toPos(shape[key]));
+                    input.parentElement!.querySelector("output")!.textContent = PARAMS[key].show(shape[key]);
+                    fill(input);
+                }
+                const full = wave.duration;
+                if (!full) return;
+                const start = Math.min((shape.start ?? 0) / 1000, full);
+                const end = Math.min(shape.end != null ? shape.end / 1000 : full, full);
+                wave.setRegion({ start, end, attack: (shape.attack ?? 0) / 1000, release: (shape.release ?? 0) / 1000 });
+                q(".lab-start").textContent = `start ${Math.round(start * 1000)} ms`;
+                q(".lab-length").textContent = `${Math.round((end - start) * 1000)} ms of ${Math.round(full * 1000)}`;
+                q(".lab-end").textContent = `end ${Math.round(end * 1000)} ms`;
+            },
+        };
+
+        const edit = q(".lab-edit");
+        edit.addEventListener("click", () => {
+            row.editing = !row.editing;
+            el.classList.toggle("is-editing", row.editing);
+            edit.setAttribute("aria-expanded", String(row.editing));
+            loadWave(role);
+        });
+        q(".lab-shape-reset").addEventListener("click", () => {
+            manifest.roles[role].shape = undefined;
+            refresh(role);
+            play(role, null, true);
+            save("Shape");
+        });
+
+        // The whole row is a drop target.
+        el.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            el.classList.add("is-over");
+        });
+        el.addEventListener("dragleave", (e) => {
+            if (!el.contains(e.relatedTarget as Node)) el.classList.remove("is-over");
+        });
+        el.addEventListener("drop", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            el.classList.remove("is-over");
+            const file = Array.from(e.dataTransfer?.files ?? []).find((f) => AUDIO.test(f.name));
+            if (file) assign(role, file);
+            else say("That is not an audio file (wav, mp3, ogg, m4a, aac, flac, webm, opus).");
+        });
+
+        rows.set(role, row);
+        list.append(el);
+        refresh(role);
+    }
+
+    // The playhead runs in an open editor whenever its role plays.
+    document.addEventListener("sound:play", (e) => {
+        const { role, at, start, end, rate } = (e as CustomEvent).detail;
+        const row = rows.get(role);
+        if (row?.editing) row.wave.play(at, start, end, rate, now);
+    });
+
+    /* ── Drops anywhere else: match files to roles by name ── */
+
+    // Longest names first, so "spark-hover.wav" is not taken for "hover".
+    const byLength = [...roles].sort((a, b) => b.length - a.length);
+    const roleFor = (name: string) => byLength.find((role) => name.toLowerCase().includes(role));
+
+    const hasFiles = (e: DragEvent) => Array.from(e.dataTransfer?.types ?? []).includes("Files");
+
+    window.addEventListener("dragenter", (e) => {
+        if (hasFiles(e)) setOpen(true);
+    });
+    // Without this the browser would open a file dropped outside the panel.
+    window.addEventListener("dragover", (e) => {
+        if (hasFiles(e)) e.preventDefault();
+    });
+    window.addEventListener("drop", (e) => {
+        if (!hasFiles(e)) return;
+        e.preventDefault();
+        const files = Array.from(e.dataTransfer!.files).filter((f) => AUDIO.test(f.name));
+        const unmatched: string[] = [];
+        for (const file of files) {
+            const role = roleFor(file.name);
+            if (role) assign(role, file);
+            else unmatched.push(file.name);
+        }
+        if (unmatched.length) say(`Drop ${unmatched.join(", ")} on a role, or name it after one (${roles.join(", ")}).`);
+    });
+</script>
+
+<style is:global>
+    /* Dev only, so it lives with the component. Built from the design
+       system's own pieces: .panel, .eyebrow, .chip, .icon-btn, .btn. */
+    .sound-lab-open,
+    .sound-lab-panel {
+        position: fixed;
+        right: max(1rem, env(safe-area-inset-right));
+        bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 3.5rem);
+        z-index: 41;
+    }
+    @media (min-width: 640px) {
+        .sound-lab-open,
+        .sound-lab-panel {
+            right: 1.5rem;
+            bottom: 5rem;
+        }
+    }
+    .sound-lab-open {
+        font-family: var(--font-mono);
+        font-size: 0.6875rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        border-style: dashed;
+    }
+    .sound-lab[data-open] .sound-lab-open,
+    .sound-lab:not([data-open]) .sound-lab-panel {
+        display: none;
+    }
+
+    /* Above the nav, so a short window scrolls the panel instead of hiding
+       its head under the bar. */
+    .sound-lab-panel {
+        z-index: 60;
+        width: min(28rem, calc(100vw - 2rem));
+        max-height: calc(100svh - 6.5rem);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        padding: 1.25rem;
+        box-shadow: var(--shadow-panel);
+        background-color: rgb(var(--color-surface) / 0.92);
+    }
+    .sound-lab .lab-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+    .sound-lab .lab-head .chip {
+        letter-spacing: 0.08em;
+        font-size: 0.625rem;
+        padding: 0.05rem 0.4rem;
+    }
+    .sound-lab .lab-hint {
+        margin-top: 0.5rem;
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        color: rgb(var(--color-ink-muted));
+    }
+    .sound-lab code {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: rgb(var(--color-ink));
+    }
+
+    .sound-lab .lab-master {
+        display: grid;
+        grid-template-columns: 4.5rem 1fr 4.25rem;
+        align-items: center;
+        gap: 0.75rem;
+        margin-top: 1rem;
+        padding: 0.75rem;
+        border-radius: var(--radius-control);
+        background: var(--wash);
+    }
+
+    .sound-lab .lab-roles {
+        display: grid;
+        gap: 0.25rem;
+        margin-top: 0.75rem;
+    }
+    .sound-lab .lab-row {
+        display: grid;
+        grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.25rem 0.75rem;
+        padding: 0.5rem 0.625rem;
+        border: 1px dashed transparent;
+        border-radius: var(--radius-control);
+        transition:
+            background-color var(--dur-fast) var(--ease-out),
+            border-color var(--dur-fast) var(--ease-out);
+    }
+    .sound-lab .lab-row:hover,
+    .sound-lab .lab-row.is-editing {
+        background: var(--wash-subtle);
+    }
+    .sound-lab .lab-row.is-over {
+        border-color: rgb(var(--color-primary));
+        background: rgb(var(--color-primary) / 0.08);
+    }
+    .sound-lab .lab-row.is-busy {
+        opacity: 0.6;
+    }
+    .sound-lab .lab-play {
+        width: 2.25rem;
+        height: 2.25rem;
+    }
+    .sound-lab .lab-play:hover {
+        color: rgb(var(--color-primary));
+    }
+    .sound-lab .lab-meta {
+        min-width: 0;
+    }
+    .sound-lab .lab-name {
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 0.8125rem;
+        color: rgb(var(--color-ink-strong));
+    }
+    .sound-lab .lab-where {
+        display: block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 0.75rem;
+        line-height: 1.4;
+        color: rgb(var(--color-ink-faint));
+    }
+    .sound-lab .lab-file {
+        display: flex;
+        align-items: center;
+        gap: 0.125rem;
+        min-width: 0;
+    }
+
+    /* The file chip is the picker: built-in, or the file's name, in the accent. */
+    .sound-lab .lab-source {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        max-width: 8.5rem;
+        margin-right: 0.25rem;
+        font-family: var(--font-mono);
+        font-size: 0.6875rem;
+        cursor: pointer;
+    }
+    .sound-lab .lab-source svg {
+        flex: none;
+        opacity: 0.7;
+    }
+    .sound-lab .lab-source-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .sound-lab .lab-source:hover {
+        color: rgb(var(--color-ink-strong));
+        border-color: var(--line-strong);
+    }
+    .sound-lab .has-file .lab-source {
+        color: rgb(var(--color-primary));
+        border-color: rgb(var(--color-primary) / 0.4);
+    }
+
+    .sound-lab .lab-icon {
+        position: relative;
+        padding: 0.3125rem;
+        border-radius: var(--radius-chip);
+        color: rgb(var(--color-ink-faint));
+        transition: color var(--dur-fast) var(--ease-out);
+    }
+    .sound-lab .lab-icon:hover,
+    .sound-lab .is-editing .lab-edit {
+        color: rgb(var(--color-ink-strong));
+    }
+    .sound-lab .lab-reset {
+        display: none;
+    }
+    .sound-lab .has-file .lab-reset {
+        display: block;
+    }
+    /* A dot on the sliders button: this role is shaped. */
+    .sound-lab .has-shape .lab-edit::after {
+        content: "";
+        position: absolute;
+        top: 0.125rem;
+        right: 0.125rem;
+        width: 0.3125rem;
+        height: 0.3125rem;
+        border-radius: 50%;
+        background: rgb(var(--color-primary));
+    }
+
+    .sound-lab .lab-level {
+        grid-column: 2 / -1;
+        display: grid;
+        grid-template-columns: 1fr 4.25rem;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .sound-lab .lab-db {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        color: rgb(var(--color-ink-muted));
+    }
+
+    /* The shape editor, open under its row. */
+    .sound-lab .lab-editor {
+        grid-column: 1 / -1;
+        display: grid;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        padding: 0.75rem;
+        border-radius: var(--radius-control);
+        background: var(--wash);
+    }
+    .sound-lab .lab-row:not(.is-editing) .lab-editor {
+        display: none;
+    }
+    .sound-lab .lab-wave {
+        display: block;
+        width: 100%;
+        height: 4.5rem;
+        border-radius: var(--radius-chip);
+        background: rgb(var(--color-background) / 0.6);
+        cursor: ew-resize;
+        touch-action: none;
+    }
+    .sound-lab .lab-span {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.6875rem;
+        font-variant-numeric: tabular-nums;
+        color: rgb(var(--color-ink-faint));
+    }
+    .sound-lab .lab-param {
+        display: grid;
+        grid-template-columns: 4.5rem 1fr 4.25rem;
+        align-items: center;
+        gap: 0.75rem;
+    }
+    .sound-lab .lab-param > span {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: rgb(var(--color-ink-muted));
+    }
+    .sound-lab .lab-editor-foot {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: 0.25rem;
+    }
+
+    /* A hairline track, filled in the accent up to the thumb (--fill). */
+    .sound-lab .lab-range {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 1rem;
+        background: transparent;
+        cursor: pointer;
+    }
+    .sound-lab .lab-range::-webkit-slider-runnable-track {
+        height: 2px;
+        border-radius: 1px;
+        background: linear-gradient(to right, rgb(var(--color-primary)) var(--fill, 50%), var(--line-strong) var(--fill, 50%));
+    }
+    .sound-lab .lab-range::-moz-range-track {
+        height: 2px;
+        border-radius: 1px;
+        background: linear-gradient(to right, rgb(var(--color-primary)) var(--fill, 50%), var(--line-strong) var(--fill, 50%));
+    }
+    .sound-lab .lab-range::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 0.75rem;
+        height: 0.75rem;
+        margin-top: calc(1px - 0.375rem);
+        border-radius: 50%;
+        background: rgb(var(--color-ink-strong));
+        transition: scale var(--dur-fast) var(--ease-out);
+    }
+    .sound-lab .lab-range::-moz-range-thumb {
+        width: 0.75rem;
+        height: 0.75rem;
+        border: 0;
+        border-radius: 50%;
+        background: rgb(var(--color-ink-strong));
+    }
+    .sound-lab .lab-range:hover::-webkit-slider-thumb {
+        scale: 1.2;
+    }
+
+    .sound-lab .lab-status {
+        min-height: 1.25rem;
+        margin-top: 0.75rem;
+        font-family: var(--font-mono);
+        font-size: 0.6875rem;
+        line-height: 1.6;
+        color: rgb(var(--color-ink-muted));
+        overflow-wrap: anywhere;
+    }
+</style>

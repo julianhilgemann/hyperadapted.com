@@ -87,6 +87,17 @@ Everything else follows julianhilgemann.com's AGENTS.md (its "Design system" and
 
 The one deliberate difference: the hero's cycling words are orange (`from-primary to-primary-glow`) where the main site's are blue, and the favicon is a dark "H" on orange, the pair of the main site's dark "JH" on blue.
 
+## Sound
+
+The site answers its actions with quiet sounds, something julianhilgemann.com does not do. The brief: barely there, warm rather than digital.
+
+- **Roles.** `hover` and `press` on `.btn`, `.icon-btn`, cards, `.follow-row`, `.arrow-link` and the nav's links; `spark-hover` and `spark-press` on the orbiting Follow button (`.orbit-ring`); `sound-on` and `sound-off` on the switch. `data-sound="ui"` or `"spark"` opts an element in, `data-sound="none"` opts it and everything inside it out. Selectors and wiring are in `src/scripts/sound.ts`.
+- **Manifest.** `src/data/sounds.json` lists the roles with their `gain`, plus `master`. A role whose `file` is null plays its built-in recipe from `src/scripts/sound-synth.ts` (Web Audio, rendered once per visit, seeded, every pitch from A major); one with a `file` plays `public/sounds/<role>.<ext>`. Every sound is levelled to the same peak, so `gain` alone sets loudness. An optional `shape` (`start`, `end`, `attack`, `release` in ms; `lowpass`, `highpass` in Hz) trims, fades and filters the sound on every play, built-in or file alike; the file itself is never edited.
+- **Behaviour.** Nothing plays before the visitor's first click, tap or key on a page (browser rule). Hover is mouse and pen only; a touch press sounds on the click, so a scroll that starts on a card stays silent. Each play drifts slightly in pitch and level and is panned toward where the element sits on screen. On iOS the audio session is `ambient`: it mixes with the visitor's music and follows the silent switch.
+- **Switch.** `SoundToggle.astro`, bottom right on every page (styles in `global.css`). On by default; the choice is kept in `localStorage.sound` and restored as `html.sound-off` before paint by an inline script in `Layout.astro`. Its four bars read the actual signal while a cue rings.
+- **Sound Lab.** `SoundLab.astro`, rendered under `astro dev` only (Layout imports it dynamically, so the build never sees it). Drop a file on a role, pick one from disk with the role's file chip, or drop a file named after a role anywhere on the page, and it plays at once; `scripts/sound-lab.mjs` (dev-server middleware) saves it to `public/sounds/` and the manifest. The sliders button opens the role's shape editor (`src/scripts/sound-lab-wave.ts` draws the waveform; drag its handles to set start and end). Levels and shapes save as they change, and a new file keeps the fades and filters but drops start and end. Saving never reloads the page, but a change to `sound-lab.mjs` needs a dev-server restart. Commit `public/sounds/` and `src/data/sounds.json` together.
+- Navigating to another page ends a ringing sound: the site has no client-side router. Chrome carries the first gesture over to the next page of the visit, Safari and Firefox wait for a new one.
+
 ## Images
 
 `scripts/render-images.sh` (macOS, Google Chrome) renders `public/og-image.jpg` from `scripts/og-image.html` and the two PNG icons from `public/favicon.svg`. Re-run it after changing either source, and commit the results.
