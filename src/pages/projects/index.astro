@@ -7,13 +7,16 @@ import ScrollCue from "../../components/ScrollCue.astro";
 import { getProjects } from "../../lib/projects";
 
 // Every published piece, newest first: a two-column grid of cards, the
-// newest one spanning both. The same layout as julianhilgemann.com/projects.
+// newest one spanning both. The same layout as julianhilgemann.com/projects,
+// except that an even count fills the grid without a featured card, so the
+// last row never ends on a gap.
 const projects = await getProjects();
+const featureFirst = projects.length % 2 === 1;
 ---
 
 <Layout
     title="Projects | Hyperadapted"
-    description="Every piece from Hyperadapted: essays, audiovisual sketches and music, with links to the channels where each one lives."
+    description="Every project from Hyperadapted: generative audiovisual pieces built in TouchDesigner and audio-reactive 3D animation rendered in Blender."
     fullWidth={true}
 >
     <MotionIntro />
@@ -24,8 +27,9 @@ const projects = await getProjects();
                 Projects
             </h1>
             <p data-intro data-intro-fade class="text-lead text-ink-muted">
-                Writing, audiovisual work and music, newest first. Pieces that
-                live on Medium, Substack or YouTube link straight there.
+                Generative audiovisual pieces that run live in TouchDesigner,
+                and 3D animation rendered from the music in Blender. Newest
+                first.
             </p>
         </div>
 
@@ -38,8 +42,8 @@ const projects = await getProjects();
                 projects.length ? (
                     <ul data-reveal-batch class="grid lg:grid-cols-2 gap-grid">
                         {projects.map((project, i) => (
-                            <li class:list={[i === 0 && "lg:col-span-2"]}>
-                                <ProjectCard project={project} featured={i === 0} as="h2" />
+                            <li class:list={[featureFirst && i === 0 && "lg:col-span-2"]}>
+                                <ProjectCard project={project} featured={featureFirst && i === 0} as="h2" />
                             </li>
                         ))}
                     </ul>

@@ -59,10 +59,10 @@ const label = href ? (social ? `${social.verb} ${social.name}` : "Open") : "Read
     </span>
 
     <div class:list={["flex flex-col flex-1 p-card", featured && "lg:p-10 lg:justify-center"]}>
-        <p class="eyebrow eyebrow-tone">
-            {category}
+        <p class="eyebrow eyebrow-tone flex-wrap gap-y-1">
+            <span class="whitespace-nowrap">{category}</span>
             <span class="eyebrow-rule"></span>
-            <time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time>
+            <time class="whitespace-nowrap" datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time>
         </p>
         <Heading class="text-h3 text-ink-strong mt-3 mb-2">{title}</Heading>
         <p class="text-ink-muted leading-relaxed">{description}</p>

@@ -7,8 +7,10 @@ import { getProjects } from "../lib/projects";
 import { url } from "../lib/url";
 
 // The welcome page: the hero, the three newest pieces, and the way to
-// follow. Everything else is on /projects.
+// follow. Everything else is on /projects. Fewer than three share the row
+// in two columns rather than leave a gap.
 const latest = (await getProjects()).slice(0, 3);
+const latestCols = latest.length >= 3 ? "md:grid-cols-3" : "md:grid-cols-2";
 ---
 
 <Layout
@@ -26,12 +28,12 @@ const latest = (await getProjects()).slice(0, 3);
             <div class="md:flex md:items-end md:justify-between md:gap-12 mb-head">
                 <h2 data-reveal-lines class="text-h2 text-ink-strong">Latest</h2>
                 <p data-reveal class="mt-5 md:mt-0 md:text-right max-w-xl text-lg text-ink-muted leading-relaxed">
-                    Essays, audiovisual sketches and music. Some live here,
-                    some on the channel they were made for.
+                    Pieces that run live in TouchDesigner, and pieces
+                    rendered from the music in Blender.
                 </p>
             </div>
 
-            <ul data-reveal-stagger class="grid md:grid-cols-3 gap-grid">
+            <ul data-reveal-stagger class:list={["grid gap-grid", latestCols]}>
                 {
                     latest.map((project) => (
                         <li>

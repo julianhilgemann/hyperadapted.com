@@ -5,7 +5,7 @@ import ScrollCue from "../components/ScrollCue.astro";
 import SocialIcon from "../components/SocialIcon.astro";
 import FollowCTA from "../components/FollowCTA.astro";
 import { socials, type Social } from "../data/socials";
-import { categories } from "../data/categories";
+import { categories, audiovisual } from "../data/categories";
 import { mainSite } from "../data/site";
 import { url } from "../lib/url";
 
@@ -68,10 +68,10 @@ const strands = {
                         {strands.Writing.map((s) => <a href={s.href} target="_blank" rel="noopener noreferrer" class="arrow-link">{s.name} <span class="arrow" aria-hidden="true">↗</span></a>)}
                     </span>
                 </li>
-                <li class:list={["card card-hover spotlight-card flex flex-col text-lg text-ink-muted leading-relaxed", `tone-${categories.Audiovisual.tone}`]}>
+                <li class:list={["card card-hover spotlight-card flex flex-col text-lg text-ink-muted leading-relaxed", `tone-${audiovisual.tone}`]}>
                     <div class="flex items-center justify-between mb-8" aria-hidden="true">
                         <span class="icon-tile">
-                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={categories.Audiovisual.icon} />
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" set:html={audiovisual.icon} />
                         </span>
                         <span class="work-num eyebrow"></span>
                     </div>

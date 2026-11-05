@@ -8,14 +8,14 @@ It is the sister site of [julianhilgemann.com](https://github.com/julianhilgeman
 
 | Route | Page file | What it is |
 | --- | --- | --- |
-| `/` | `src/pages/index.astro` | Hero (`Hero.astro`: gradient sheet, headline whose last word cycles, "sound." → "motion." …), "Latest" (the three newest projects), `FollowCTA`. Motion: `home.ts`. |
-| `/projects` | `projects/index.astro` | Every published project, newest first; the newest card spans both columns. Motion: `page.ts`. |
+| `/` | `src/pages/index.astro` | Hero (`Hero.astro`: gradient sheet, headline whose last word cycles, "sound." → "motion." …), "Latest" (the three newest projects; fewer than three share the row in two columns), `FollowCTA`. Motion: `home.ts`. |
+| `/projects` | `projects/index.astro` | Every published project, newest first, two columns. With an odd count the newest card spans both; with an even count none does, so the grid ends without a gap. Motion: `page.ts`. |
 | `/projects/<slug>` | `projects/[slug].astro` | One page per project hosted here (no `href`). Motion: `page.ts`. |
 | `/story` | `story.astro` | The Story, moved here from julianhilgemann.com: seven chapters and a coda, one `StoryField` figure each and `NumberAnatomy` in chapter 6. Motion: `story.ts` + `story-field.ts`. See "Story" below. |
 | `/about` | `about.astro` | What Hyperadapted is, the three strands (Writing, Audiovisual, Music), "Why Hyperadapted", the channels as link cards, "The other half". Motion: `page.ts`. |
 | legal | `impressum`, `datenschutz`, `cookie-einstellungen` | German, as German law expects. Copied from julianhilgemann.com with the external-links list cut to this site's channels. |
 | `404` | `404.astro` | |
-| `/articles`, `/articles/<slug>` | `redirects` in `astro.config.mjs` | The old name of `/projects`, kept as redirects: static pages that meta-refresh, since GitHub Pages serves no server redirects. |
+| `/articles`, `/articles/<slug>` | `redirects` in `astro.config.mjs` | The old name of `/projects`, kept as redirects: static pages that meta-refresh, since GitHub Pages serves no server redirects. The same file redirects the three retired placeholder projects (see "Projects"). |
 
 `src/layouts/Layout.astro` owns `<head>`, the GA4 consent defaults, the Klaro cookie banner config, Nav, Footer and the follow dialog.
 
@@ -30,16 +30,25 @@ The site is served at `https://hyperadapted.com` (`site` in `astro.config.mjs`).
 
 The work is called Projects, as on julianhilgemann.com, though a piece can be an essay as well as a video or a track. It was Articles until 2026-10-25.
 
-`src/content/projects/*.md`, schema in `src/content/config.ts`: `title`, `description`, `date`, `category` (`Writing` | `Audiovisual` | `Music`, from `src/data/categories.ts`), optional `image` (a 16:9 file under `public/`, given as `/assets/...`), `href`, `draft`.
+`src/content/projects/*.md`, schema in `src/content/config.ts`: `title`, `description`, `date`, `category` (`Generative Audiovisual` | `3D Animation` | `Writing` | `Music`, from `src/data/categories.ts`), optional `image` (a 16:9 file under `public/`, given as `/assets/...`), `href`, `draft`.
 
 - No `href`: the project is hosted here; the body is the page, the file name is the slug.
 - `href` set (a Medium post, a Substack letter, a YouTube video): the card links straight there with that channel's mark and verb ("Watch on YouTube", from `socialFor()` in `src/data/socials.ts`), and no page is built. The body can stay empty.
 - `draft: true` keeps a file out of the build entirely.
 - No `image`: `ProjectCard` draws a cover in the category's tone with the category's mark.
 
-`welcome-to-hyperadapted`, `datasketches` and `notes-on-sound` are placeholders that say so in their last line. Replace them. `flyby` and `neon-maze` are real: YouTube Shorts, dated to the second of their upload (UTC) so they sort above the placeholders from the same day, with a 16:9 centre crop of the Short's frame as the cover.
+Since 2026-11-06 the work is summed up as two projects, one per audiovisual category, each a body of work rather than a single piece:
 
-Category → tone: Writing is `info` (blue: structure, thought), Audiovisual and Music are `primary` (orange: the expressive end). The tone colours the card's eyebrow, arrow and cover, and the project page's accents.
+- `datapipe` (3D Animation): the [audiovisual-animations](https://github.com/julianhilgemann/audiovisual-animations) repo, which renders audio-reactive Shorts in Blender. Its page lists the Shorts made with it (Flyby and Fly through the neon maze, once projects of their own, with their 16:9 covers linking to YouTube). Dated to the repo's last push.
+- `touchdesigner-works` (Generative Audiovisual): the [av-td-works](https://github.com/julianhilgemann/av-td-works) repo. Its page lists every TouchDesigner project in it, grouped, each linking to its folder on GitHub. Dated to the repo's last push. When a project is added there, add it here too.
+
+A new Short or TouchDesigner piece goes onto its project's page, not into a card of its own. The placeholders `welcome-to-hyperadapted`, `datasketches` and `notes-on-sound` were removed then; their old URLs redirect to `/about` or `/projects`. Writing and Music stay in the schema for the first real essay or track.
+
+The two covers are 3840x2160 WebP in julianhilgemann.com's card frame (its AGENTS.md, "Projects"): the work on a rounded panel over a flat `#D4D3D8` backdrop, the title below in Inter Display 700. `datapipe.webp` is that site's own card, copied as is. `touchdesigner-works.webp` was made the same way from eight stills of the GIF previews in av-td-works, cropped to their content, softened slightly against the GIFs' dither, and laid out four by two on a near-black panel (about 200 KB).
+
+Markdown bodies cannot call `url()`, so their internal links and images use root paths (`/projects/datapipe`, `/assets/projects/flyby.webp`). If a `base` is ever set again, these need it too.
+
+Category → tone: Writing is `info` (blue: structure, thought); Generative Audiovisual, 3D Animation and Music are `primary` (orange: the expressive end). The tone colours the card's eyebrow, arrow and cover, and the project page's accents. About's Audiovisual strand spans both audiovisual categories and takes its mark from `audiovisual` in `categories.ts`.
 
 ## Story
 
