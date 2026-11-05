@@ -36,7 +36,7 @@ Add a Markdown file to `src/content/projects/`:
 title: "A new piece"
 description: "One sentence for the card and the link preview."
 date: 2026-11-01
-category: Writing          # Writing | Audiovisual | Music
+category: Writing          # Generative Audiovisual | 3D Animation | Writing | Music
 image: /assets/projects/a-new-piece.webp   # optional, 16:9, under public/
 href: https://medium.com/@hyperadapted/... # optional: link out instead of hosting it here
 ---

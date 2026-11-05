@@ -32,10 +32,10 @@ const { Content } = await project.render();
 
     <article class:list={["page-container pb-section", `tone-${tone}`]}>
         <header class="max-w-3xl mb-12 md:mb-16">
-            <p data-intro data-intro-fade class="eyebrow eyebrow-tone mb-6">
-                {category}
+            <p data-intro data-intro-fade class="eyebrow eyebrow-tone flex-wrap gap-y-1 mb-6">
+                <span class="whitespace-nowrap">{category}</span>
                 <span class="eyebrow-rule"></span>
-                <time datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time>
+                <time class="whitespace-nowrap" datetime={date.toISOString().slice(0, 10)}>{formatDate(date)}</time>
             </p>
             <h1 data-page-title data-intro class="text-h2 text-ink-strong mb-6">{title}</h1>
             <p data-intro data-intro-fade class="text-lead text-ink-muted">{description}</p>
